@@ -3,3 +3,6 @@
 .DS_STORE
 __pycache__/
 .idea/
+
+debug.db
+test.db
