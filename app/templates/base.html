@@ -13,20 +13,20 @@
     
     <nav class="navbar">
         <div class="container">
-            <a href="{{ url_for('main.index') }}">
+            <a class="nav__logo_section" href="{{ url_for('main.index') }}">
                 <img src="https://fontawesome.com/icons/rainbow?f=classic&s=solid" alt="">
                 Kona
             </a>
             <div class="nav_search">
                 <input type="text" placeholder="Найти что-нибудь интересное...">
-                <a href="">Найти!</a>
+                <!-- <a href="">Найти!</a> -->
             </div>
             
             {% if name == "Абоб": %}
             <div class="user_profile">
                 <a href="">
                     <img src="" alt="Аватар">
-                    {{ name }}
+                    <a class="username" href="">{{ name }}</a>
                     <img src="" alt="ВУЗ">
                 </a>
             </div>
@@ -41,7 +41,7 @@
         </div>
     </nav>
     
-    {% block content %}{% endblock %}
+    {% block content_logged %}{% endblock %}
 
 </body>
 </html>
