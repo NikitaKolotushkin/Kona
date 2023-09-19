@@ -1,7 +1,39 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block content_logged %}
     <div class="container">
-        <h1>Test</h1>
+        <div class="container__content">
+            <div class="sidebar sidebar_left">
+                <div class="sidebar_left__menu">
+                    <h3>Меню</h3>
+                    <ul>
+                        <li><a href=""><img src="../static/img/flag.svg" alt="">Мероприятия</a></li>
+                        <li><a href=""><img src="../static/img/user.svg" alt="">Друзья</a></li>
+                        <li><a href=""><img src="../static/img/message.svg" alt="">Сообщения</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar_left__soon">
+                    <h3>Скоро у вас</h3>
+
+                </div>
+                <div class="sidebar_left__notifications">
+                    <h3>Уведомления</h3>
+
+                </div>
+            </div>
+            <div class="main_content">
+
+            </div>
+            <div class="sidebar sidebar_right">
+                <h3>Параметры</h3>
+                <p>Этим мы потом <br> займемся</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content_unlogged %}
+    <div class="container">
+        <h1>Пососи</h1>
     </div>
 {% endblock %}

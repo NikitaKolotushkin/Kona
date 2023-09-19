@@ -9,11 +9,12 @@ html {
 }
 
 body {
-    background: rgb(25, 25, 37);
+    background: #1A1A1A;
+    color: #fff;
 }
 
 h1 {
-    color: #fff;
+
 }
 
 a {
@@ -22,32 +23,41 @@ a {
 }
 
 nav {
-    color: #fff;
-    background: rgb(39, 39, 58);
-    opacity: .9;
+    background: rgba(88, 88, 88, 0.50);
+    backdrop-filter: blur(15px);
+    height: 8vh;
+}
+
+.nav__logo_section {
+    width: 18%;
+    font-weight: 700;
+    font-size: 4vh;
 }
 
 .nav_search {
-    width: 70%;
+    width: 64%;
     display: flex;
     height: 5vh;
     justify-content: space-between;
 }
 
 .nav_search input {
-    width: 80%;
-    padding-left: 2%;
+    width: 100%;
+    padding-left: 3%;
     background-color: #808080;
     color: #fff;
     border: none;
     border-radius: 15px;
+    outline: none;
 }
 
 .nav_search input::placeholder {
-    color: #c4c4c4;
+    color: #C6C5C5;
+    font-size: 3vh;
 }
 
 .nav_search a {
+    font-size: 3vh;
     display: flex;
     width: 18%;
     background: rgb(99, 106, 230);
@@ -55,4 +65,82 @@ nav {
     justify-content: center;
     align-items: center;
     border-radius: 15px;
+}
+
+.user_profile {
+    width: 18%;
+    display: flex;
+    justify-content: right;
+}
+
+.username {
+    font-size: 3.6vh;
+}
+
+.container__content {
+    display: flex;
+}
+
+.sidebar_left {
+    width: 18%;
+    height: 92vh;
+}
+
+.sidebar_left__menu {
+    height: 25vh;
+}
+
+.sidebar h3 {
+    font-size: 3vh;
+    font-weight: 700;
+    padding-top: 1.8vh;
+    padding-bottom: .5vh;
+}
+
+.sidebar p {
+    font-size: 2vh;
+    font-weight: 500;
+}
+
+.sidebar_left__menu ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding: 0;
+    font-size: 2vh;
+}
+
+.sidebar_left__menu li {
+    margin-bottom: .7vh;
+}
+
+.sidebar_left__menu a {
+    font-weight: 500;
+    display: flex;
+    height: 3vh;
+    align-items: center;
+    align-content: center;
+}
+
+.sidebar_left__menu img {
+    margin-right: 8px;
+    height: 2.5vh;
+}
+
+.sidebar_left__soon {
+    height: 25vh;
+}
+
+.sidebar_left__notifications {
+    height: 25vh;
+}
+
+.sidebar_right {
+    width: 18%;
+    height: 92vh;
+}
+
+.main_content {
+    width: 64%;
+    height: 92vh;
+    border: 2px solid red;
 }
