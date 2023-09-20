@@ -11,10 +11,45 @@ html {
 body {
     background: #1A1A1A;
     color: #fff;
+    z-index: 4;
+    overflow: hidden;
 }
 
-h1 {
+@keyframes rotate {
+  from {
+    rotate: 0deg;
+  }
 
+  50% {
+    scale: 1 1.5;
+  }
+
+  to {
+    rotate: 360deg;
+  }
+}
+
+#blob {
+  background-color: white;
+  height: 34vmax;
+  aspect-ratio: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: linear-gradient(to right, aquamarine, mediumpurple);
+  animation: rotate 20s infinite;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+#blur {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 3;
+  backdrop-filter: blur(12vmax);
 }
 
 a {
@@ -22,10 +57,12 @@ a {
     text-decoration: none;
 }
 
+
 nav {
     background: rgba(88, 88, 88, 0.50);
     backdrop-filter: blur(15px);
     height: 8vh;
+    z-index:4;
 }
 
 .nav__logo_section {
@@ -76,7 +113,10 @@ nav {
 .username {
     font-size: 3.6vh;
 }
-
+main {
+    position: relative;
+    z-index:4;
+}
 .container__content {
     display: flex;
 }
