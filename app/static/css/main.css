@@ -31,7 +31,7 @@ body {
 
 #blob {
   background-color: white;
-  height: 34vmax;
+  height: 24vmax;
   aspect-ratio: 1;
   position: absolute;
   left: 50%;
@@ -59,16 +59,24 @@ a {
 
 
 nav {
-    background: rgba(88, 88, 88, 0.50);
-    backdrop-filter: blur(15px);
+    background: rgba(88, 88, 88, .5);
+    backdrop-filter: blur(150px);
     height: 8vh;
-    z-index:4;
+    z-index:9999;
 }
 
 .nav__logo_section {
     width: 18%;
     font-weight: 700;
     font-size: 4vh;
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
+}
+
+.nav__logo_section img {
+    height: 4.5vh;
+    margin-right: 10px;
 }
 
 .nav_search {
