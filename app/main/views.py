@@ -13,4 +13,8 @@ def index():
 
 @main.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('user_login.html', title='Kona | Вход')
+
+@main.route('/registration')
+def registration():
+    return render_template('user_registration.html', title='Kona | Регистрация')
