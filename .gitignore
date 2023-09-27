@@ -1,8 +1,9 @@
 *.sw*
 
 .DS_STORE
-__pycache__/
+.vscode
 .idea/
+__pycache__/
 venv/
 
 debug.db
