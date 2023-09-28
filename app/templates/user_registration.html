@@ -2,8 +2,15 @@
 
 {% block content %}
     <div class="container">
-        <h1>
-            Страница регистрации
-        </h1>
+        <form action="" method="post" class="registration_form">
+            <h3>Регистрация пользователя</h3>
+            <input type="text" name="user_name" placeholder="Имя">
+            <input type="text" name="user_surname" placeholder="Фамилия">
+            <input type="text" name="user_login" placeholder="Логин">
+            <input type="email" name="email" placeholder="Адрес электронной почты">
+            <input type="password" name="password" id="" placeholder="Пароль">
+            <input type="password" name="password_repeat" id="" placeholder="Повторите пароль">
+            <input type="button" value="Вперед!">
+        </form>
     </div>
 {% endblock %}
