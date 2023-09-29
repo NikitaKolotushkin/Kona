@@ -1,0 +1,13 @@
+@media (max-width: 992px) {
+    .nav_search {
+        display: none;
+    }
+
+    .nav__logo_section {
+        width: 50%;
+    }
+
+    .user_profile {
+        width: 50%;
+    }
+}
