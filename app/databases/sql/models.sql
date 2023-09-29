@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS Users (
     user_phone CHAR (32),
     user_description VARCHAR (2048),
     user_photo VARBINARY (8000),
+    user_city VARCHAR (64),
     user_university VARCHAR (256)
 );
 
