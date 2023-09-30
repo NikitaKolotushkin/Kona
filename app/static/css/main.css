@@ -239,7 +239,7 @@ main {
     font-size: 5vh;
 }
 
-.registration_form input {
+.form_wrapper input {
     width: 100%;
     height: 6vh;
     margin-top: 1.5vh;
@@ -251,18 +251,12 @@ main {
     color: #FFFCFC;
 }
 
-.registration_form input::placeholder {
+.form_wrapper input::placeholder {
     color: #FFFCFC;
     font-weight: 400;
 }
 
-.registration_form__center {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-input.registration_form__button {
+input.form__button {
     width: 30%;
     padding: 0;
     color: #1A1A1A;
@@ -270,7 +264,7 @@ input.registration_form__button {
     font-weight: 700;
 }
 
-input.registration_form__button:hover {
+input.form__button:hover {
     background: #1A1A1A;
     color: #FFFCFC;
     border: 2px solid #FFFCFC;
