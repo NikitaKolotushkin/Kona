@@ -6,5 +6,5 @@
 __pycache__/
 venv/
 
-debug.db
+dev.db
 test.db
