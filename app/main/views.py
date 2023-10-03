@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from . import main
+from app.models import User
 
 from flask import Flask, request, render_template, redirect, url_for
+from flask_login import login_required, login_user, current_user, logout_user
 
 
 @main.route('/')
