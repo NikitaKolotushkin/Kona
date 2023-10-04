@@ -10,11 +10,13 @@
                 <input type="text" name="user_login" placeholder="Логин">
                 <input type="email" name="email" placeholder="Адрес электронной почты">
                 <input type="password" name="password" id="" placeholder="Пароль">
-                <input type="password" name="password_repeat" id="" placeholder="Повторите пароль">
-                    <input type="button" class="form__button" value="Вперед!">
+                <input type="password" name="password_confirm" id="" placeholder="Повторите пароль">
+                <input type="submit" class="form__button" value="Вперед!">
                 <!-- <p>Вы - компания? <a href="">Зарегистрируйтесь!</a></p> -->
             </form>
         </div>
-        
     </div>
+    {% for category, msg in get_flashed_messages(True) %}
+        <div id="flash" class="flash {{category}}">{{msg}}</div>
+    {% endfor %}
 {% endblock %}

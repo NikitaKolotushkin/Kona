@@ -5,11 +5,11 @@ from flask import Flask
 from flask_script import Command, Manager, Shell
 
 from app import create_app, db
-from config import DevelopmentConfig, TestingConfig, ProductionConfig
+from config import current_config
 from manager_commands import Runner
 
 
-app = create_app(config_class=DevelopmentConfig)
+app = create_app(config_class=current_config)
 manager = Manager(app)
 
 
