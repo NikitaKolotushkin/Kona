@@ -5,11 +5,14 @@
         <div class="login form_wrapper">
             <form action="" class="login_form" method="post">
                 <h3>вход</h3>
-                <input type="email" name="" id="" placeholder="Почта">
-                <input type="password" name="" id="" placeholder="Пароль">
-                <input type="button" class="form__button" value="Вперед!">
+                <input type="email" name="email" id="" placeholder="Почта">
+                <input type="password" name="password" id="" placeholder="Пароль">
+                <input type="submit" class="form__button" value="Вперед!">
             </form>
             <a href="{{ url_for('main.registration') }}">Регистрация</a>
         </div>
     </div>
+    {% for category, msg in get_flashed_messages(True) %}
+        <div id="flash" class="flash {{category}}">{{msg}}</div>
+    {% endfor %}
 {% endblock %}
