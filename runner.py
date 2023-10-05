@@ -5,6 +5,7 @@ from flask import Flask
 from flask_script import Command, Manager, Shell
 
 from app import create_app, db
+from app.models import User, University
 from config import current_config
 from manager_commands import Runner
 
@@ -14,7 +15,7 @@ manager = Manager(app)
 
 
 def make_shell_context():
-    return dict(app=app, db=db)
+    return dict(app=app, db=db, User=User, University=University)
 
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
