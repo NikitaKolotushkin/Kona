@@ -4,6 +4,7 @@
 .vscode
 .idea/
 __pycache__/
+migrations/
 venv/
 
 dev.db
