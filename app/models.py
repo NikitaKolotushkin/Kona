@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     user_password_hash = db.Column(db.String(256), nullable=False)
     user_name = db.Column(db.String(64), nullable=False)
     user_surname = db.Column(db.String(64), nullable=False)
-    user_phone = db.Column(db.String(16), nullable=False)
+    user_phone = db.Column(db.String(16))
     user_description = db.Column(db.Text(2048))
     user_photo = db.Column(db.LargeBinary(8000))
     user_city = db.Column(db.String(64))
