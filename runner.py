@@ -3,7 +3,6 @@
 
 from flask import Flask
 from flask_script import Command, Manager, Shell
-
 from app import create_app, db
 from app.models import User, University
 from config import current_config

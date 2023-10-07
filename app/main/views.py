@@ -4,10 +4,9 @@
 from . import main
 from app.models import User
 from app import db
-
 from flask import Flask, flash, render_template, redirect, request, url_for
 from flask_login import login_required, login_user, current_user, logout_user
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @main.route('/')
@@ -17,9 +16,14 @@ def index():
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if len(request.form['email']) > 1:
-            flash('TEST MESSAGE', 'error')
-
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(user_email=email).first()
+        if user:
+            if check_password_hash(user.user_password_hash, password):
+                flash('Успешный вход!', category='success')
+            else: flash('Неверный пароль!', category='error')
+        else: flash('Неверная почта!', category='error')
     return render_template('user_login.html', title='Kona | Вход')
 
 @main.route('/registration', methods=['POST', 'GET'])
