@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from . import main
-from app.models import User
 from app import db
+from app.models import User
+from app.tools import validate_email
 
 from flask import Flask, flash, render_template, redirect, request, url_for
 from flask_login import login_required, login_user, current_user, logout_user
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @main.route('/')
@@ -36,7 +37,7 @@ def registration():
         if len(user_name) > 0 \
         and len(user_surname) > 0 \
         and len(user_login) > 3 \
-        and len(user_email) > 4 \
+        and validate_email(user_email) \
         and (user_password == user_password_confirm):
             
             if User.query.filter_by(user_email=user_email).first():
@@ -57,6 +58,12 @@ def registration():
             flash('Проверьте правильность введенных данных.', 'error')
         
     return render_template('user_registration.html', title='Kona | Регистрация')
+
+
+@main.route('/user/<user_tag>', methods=['GET', 'POST'])
+@login_required
+def user_profile():
+    return render_template('user_profile.html', title='Kona | Личный кабинет')
 
 
 @main.app_errorhandler(401)
