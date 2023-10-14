@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     user_id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     user_login = db.Column(db.String(64), nullable=False, unique=True)
     user_email = db.Column(db.String(64), nullable=False, unique=True)
-    user_tag = db.Column(db.String(64), unique=True)
+    user_tag = db.Column(db.String(64), nullable=False, unique=True)
     user_password_hash = db.Column(db.String(256), nullable=False)
     user_name = db.Column(db.String(64), nullable=False)
     user_surname = db.Column(db.String(64), nullable=False)

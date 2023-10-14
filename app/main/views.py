@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import main
-from app import db
+import random
+
+from flask import flash, render_template, redirect, request, url_for
+from flask_login import login_required
+from sqlalchemy.sql import select
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from app import db, engine
 from app.models import User
 from app.tools import validate_email
+from . import main
 
-from flask import Flask, flash, render_template, redirect, request, url_for
-from flask_login import login_required, login_user, current_user, logout_user
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @main.route('/')
@@ -19,8 +23,21 @@ def index():
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        pass
+        email = request.form['email']
+        password = request.form['password']
+        mail = User.query.filter_by(user_email=email).first()
 
+        if mail:
+            if check_password_hash(mail.user_password_hash, password):
+
+                s = select(User.user_tag).where(User.user_email == email)
+                tag = [row for row in engine.connect().execute(s)][0][0]
+
+                return redirect(url_for('.user_profile', user_tag=tag))
+            else:
+                flash('Неверный пароль!', category='error')
+        else:
+            flash('Неверная почта!', category='error')
     return render_template('user_login.html', title='Kona | Вход')
 
 
@@ -35,17 +52,23 @@ def registration():
         user_password_confirm = request.form['password_confirm']
 
         if len(user_name) > 0 \
-        and len(user_surname) > 0 \
-        and len(user_login) > 3 \
-        and validate_email(user_email) \
-        and (user_password == user_password_confirm):
-            
+                and len(user_surname) > 0 \
+                and len(user_login) > 3 \
+                and validate_email(user_email) \
+                and (user_password == user_password_confirm):
+
             if User.query.filter_by(user_email=user_email).first():
                 flash('Пользователь уже существует', 'error')
                 return redirect(url_for('.login'))
 
             try:
-                user = User(user_login=user_login, user_email=user_email, user_password_hash=generate_password_hash(user_password), user_name=user_name, user_surname=user_surname)
+                user_tag = random.randint(10_000_000, 99_999_999)
+                while user_tag == User.query.filter_by(user_tag=user_tag).first():
+                    user_tag = random.randint(10_000_000, 99_999_999)
+
+                user = User(user_login=user_login, user_email=user_email,
+                            user_password_hash=generate_password_hash(user_password), user_name=user_name,
+                            user_surname=user_surname, user_tag=user_tag)
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
@@ -53,17 +76,17 @@ def registration():
             except:
                 db.session.rollback()
                 flash('Неизвестная ошибка. Повторите позже.', 'error')
-        
+
         else:
             flash('Проверьте правильность введенных данных.', 'error')
-        
+
     return render_template('user_registration.html', title='Kona | Регистрация')
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
-@login_required
-def user_profile():
-    return render_template('user_profile.html', title='Kona | Личный кабинет')
+# @login_required
+def user_profile(user_tag):
+    return render_template('user_profile.html', title=f'Kona | Личный кабинет {user_tag}')
 
 
 @main.app_errorhandler(401)
