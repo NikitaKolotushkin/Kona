@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Users (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
     user_login CHAR (64) NOT NULL UNIQUE, 
     user_email CHAR (64) NOT NULL UNIQUE,
-    user_tag CHAR (64) UNIQUE,
+    user_tag CHAR (64) NOT NULL UNIQUE,
     user_password_hash VARCHAR (256) NOT NULL,
     user_name VARCHAR (64) NOT NULL,
     user_surname VARCHAR (64) NOT NULL,

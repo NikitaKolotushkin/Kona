@@ -5,11 +5,13 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 
-from config import DevelopmentConfig, TestingConfig, ProductionConfig
+from config import current_config
 
 
 db = SQLAlchemy()
+engine = create_engine(current_config.SQLALCHEMY_DATABASE_URI)
 login_manager = LoginManager()
 migrate = Migrate()
 
