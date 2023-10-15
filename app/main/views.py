@@ -14,7 +14,6 @@ from app.tools import validate_email
 from . import main
 
 
-
 @main.route('/')
 def index():
     return render_template('index.html', title='Kona - Возможности в твоих руках!', name='Абоб1')
