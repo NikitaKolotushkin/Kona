@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
 
     __tablename__ = 'users'
 
-    user_id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     user_login = db.Column(db.String(64), nullable=False, unique=True)
     user_email = db.Column(db.String(64), nullable=False, unique=True)
     user_tag = db.Column(db.String(64), nullable=False, unique=True)
@@ -31,18 +31,18 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.user_password_hash, password)
 
     def __repr__(self):
-        return f'<{self.user_id}:{self.user_name}>'
+        return f'<{self.id}:{self.user_name}>'
     
 
 class University(db.Model):
     
     __tablename__ = 'universities'
 
-    university_id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     university_name = db.Column(db.String(255), nullable=False, unique=True)
 
     def __repr__(self):
-        return f'<{self.university_id}:{self.university_name}>'
+        return f'<{self.id}:{self.university_name}>'
     
 
 @login_manager.user_loader
