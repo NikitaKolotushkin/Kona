@@ -4,12 +4,12 @@
 import random
 
 from flask import flash, render_template, redirect, request, url_for
-from flask_login import login_required
+from flask_login import login_required, login_user
 from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User
+from app.models import User, load_user
 from app.tools import validate_email
 from . import main
 
@@ -32,6 +32,8 @@ def login():
 
                 s = select(User.user_tag).where(User.user_email == email)
                 tag = [row for row in engine.connect().execute(s)][0][0]
+
+                login_user(mail, remember=True)
 
                 return redirect(url_for('.user_profile', user_tag=tag))
             else:
@@ -73,6 +75,8 @@ def registration():
                 db.session.flush()
                 db.session.commit()
 
+                return redirect(url_for('.login'))
+
             except:
                 db.session.rollback()
                 flash('Неизвестная ошибка. Повторите позже.', 'error')
@@ -84,7 +88,7 @@ def registration():
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def user_profile(user_tag):
     return render_template('user_profile.html', title=f'Kona | Личный кабинет {user_tag}')
 
