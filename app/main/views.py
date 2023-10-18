@@ -3,8 +3,8 @@
 
 import random
 
-from flask import flash, render_template, redirect, request, url_for
-from flask_login import login_required, login_user
+from flask import flash, render_template, redirect, request, url_for, make_response
+from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -84,6 +84,13 @@ def registration():
             flash('Проверьте правильность введенных данных.', 'error')
 
     return render_template('user_registration.html', title='Kona | Регистрация')
+
+
+@main.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('.index'))
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
