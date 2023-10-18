@@ -3,7 +3,8 @@
 {% block content %}
 
 <div class="container">
-    <h2>Добро пожаловать в личный кабинет!</h2> 
+    <h2>Добро пожаловать в личный кабинет, {{ current_user.user_name }}!</h2> 
+    <a href="{{ url_for('.logout') }}">Выход</a>
 </div>
 
 {% endblock %}
