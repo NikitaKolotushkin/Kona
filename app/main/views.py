@@ -3,7 +3,7 @@
 
 import random
 
-from flask import flash, render_template, redirect, request, url_for, make_response
+from flask import flash, render_template, redirect, request, url_for, make_response, session
 from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -24,15 +24,17 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        mail = User.query.filter_by(user_email=email).first()
+        user = User.query.filter_by(user_email=email).first()
 
-        if mail:
-            if check_password_hash(mail.user_password_hash, password):
+        if user:
+            if check_password_hash(user.user_password_hash, password):
 
-                s = select(User.user_tag).where(User.user_email == email)
-                tag = [row for row in engine.connect().execute(s)][0][0]
+                selected_user = select(User.user_tag).where(User.user_email == email)
+                tag = [row for row in engine.connect().execute(selected_user)][0][0]
 
-                login_user(mail, remember=True)
+                login_user(user, remember=True)
+                session.permanent = True
+                session['email'] = user.user_email
 
                 return redirect(url_for('.user_profile', user_tag=tag))
             else:
@@ -90,6 +92,7 @@ def registration():
 @login_required
 def logout():
     logout_user()
+    session.pop('email', None)
     return redirect(url_for('.index'))
 
 
