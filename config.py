@@ -2,6 +2,8 @@ import os
 import random
 import string
 
+from datetime import timedelta
+
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,6 +15,10 @@ class BaseConfig:
     SQLALCHEMY_DATABASE_URI = ''
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TEMPLATES_AUTO_RELOAD = True
+    COOKIE_SECURE = 'Secure'                                                     
+    COOKIE_DURATION = timedelta(days=31)
+    PERMANENT_SESSION_LIFETIME = timedelta(days=31)
+    REMEMBER_COOKIE_DURATION = timedelta(days=31)
     UPLOAD_FOLDER: str = os.path.join(app_dir, 'uploads')
     JSON_AS_ASCII: bool = True
     HOST: str = os.environ.get('APP_HOST', '0.0.0.0')
