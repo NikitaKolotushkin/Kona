@@ -16,7 +16,10 @@ from . import main
 
 @main.route('/')
 def index():
-    return render_template('index.html', title='Kona - Возможности в твоих руках!', name='Абоб1')
+    if not current_user.is_authenticated:
+        return render_template('index.html', title='Kona - Возможности в твоих руках!')
+    else:
+        return redirect(url_for('.events'))
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -88,18 +91,45 @@ def registration():
     return render_template('user_registration.html', title='Kona | Регистрация')
 
 
+@main.route('/friends', methods=['GET', 'POST'])
+@login_required
+def friends():
+    return render_template('friends.html', title='Kona | Друзья')
+
+
+@main.route('/messenger', methods=['GET', 'POST'])
+@login_required
+def messenger():
+    return render_template('messenger.html', title='Kona | Мессенджер')
+
+
+@main.route('/events', methods=['GET', 'POST'])
+@login_required
+def events():
+    return render_template('events.html', title='Kona | Мероприятия')
+
+
+@main.route('/event/<event_id>', methods=['GET', 'POST'])
+@login_required
+def event_page(event_id):
+    return render_template('event_page.html', title='Ивент')
+
+
+@main.route('/user/<user_tag>', methods=['GET', 'POST'])
+@login_required
+def user_profile(user_tag):
+
+    user_data = [row for row in engine.connect().execute(select(User).where(User.user_tag == user_tag))][0]
+
+    return render_template('user_profile.html', title=f'Kona | {user_data[5]} {user_data[6]}', data=user_data)
+
+
 @main.route('/logout')
 @login_required
 def logout():
     logout_user()
     session.pop('email', None)
     return redirect(url_for('.index'))
-
-
-@main.route('/user/<user_tag>', methods=['GET', 'POST'])
-@login_required
-def user_profile(user_tag):
-    return render_template('user_profile.html', title=f'Kona | Личный кабинет {user_tag}')
 
 
 @main.app_errorhandler(401)

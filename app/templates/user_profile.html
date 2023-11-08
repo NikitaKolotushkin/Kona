@@ -1,10 +1,36 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 
-{% block content %}
+{% block index_content %}
 
-<div class="container">
-    <h2>Добро пожаловать в личный кабинет, {{ current_user.user_name }}!</h2> 
+    <div class="profile_content">
+        <div class="user_block">
+            <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
+            <div class="user_block__user_data">
+                <h2>{{ data[5] }} {{ data[6] }}</h2> 
+                <h4>{{ data[10] }}, {{ data[11] }}</h4>
+            </div>
+        </div>
+        
+        <div class="user_block__interests">
+            <h3>Интересы</h3>
+        </div>
+        <div class="user_block__friends">
+            <h3>Друзья</h3>
+        </div>
+        <div class="user_block__visited">
+            <h3>Посещено</h3>
+        </div>
+
     <a href="{{ url_for('.logout') }}">Выход</a>
-</div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <!-- {{ data }} -->
+    </div>
+
+    
 
 {% endblock %}
