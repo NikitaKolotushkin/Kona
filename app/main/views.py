@@ -27,17 +27,17 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(user_email=email).first()
+        user = User.query.filter_by(email=email).first()
 
         if user:
-            if check_password_hash(user.user_password_hash, password):
+            if check_password_hash(user.password_hash, password):
 
-                selected_user = select(User.user_tag).where(User.user_email == email)
+                selected_user = select(User.tag).where(User.email == email)
                 tag = [row for row in engine.connect().execute(selected_user)][0][0]
 
                 login_user(user, remember=True)
                 session.permanent = True
-                session['email'] = user.user_email
+                session['email'] = user.email
 
                 return redirect(url_for('.user_profile', user_tag=tag))
             else:
@@ -63,18 +63,18 @@ def registration():
                 and validate_email(user_email) \
                 and (user_password == user_password_confirm):
 
-            if User.query.filter_by(user_email=user_email).first():
+            if User.query.filter_by(email=user_email).first():
                 flash('Пользователь уже существует', 'error')
                 return redirect(url_for('.login'))
 
             try:
                 user_tag = random.randint(10_000_000, 99_999_999)
-                while user_tag == User.query.filter_by(user_tag=user_tag).first():
+                while user_tag == User.query.filter_by(tag=user_tag).first():
                     user_tag = random.randint(10_000_000, 99_999_999)
 
-                user = User(user_login=user_login, user_email=user_email,
-                            user_password_hash=generate_password_hash(user_password), user_name=user_name,
-                            user_surname=user_surname, user_tag=user_tag)
+                user = User(login=user_login, email=user_email,
+                            password_hash=generate_password_hash(user_password), name=user_name,
+                            surname=user_surname, tag=user_tag)
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
@@ -119,7 +119,7 @@ def event_page(event_id):
 @login_required
 def user_profile(user_tag):
 
-    user_data = [row for row in engine.connect().execute(select(User).where(User.user_tag == user_tag))][0]
+    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
 
     return render_template('user_profile.html', title=f'Kona | {user_data[5]} {user_data[6]}', data=user_data)
 

@@ -12,26 +12,26 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    user_login = db.Column(db.String(64), nullable=False, unique=True)
-    user_email = db.Column(db.String(64), nullable=False, unique=True)
-    user_tag = db.Column(db.String(64), nullable=False, unique=True)
-    user_password_hash = db.Column(db.String(256), nullable=False)
-    user_name = db.Column(db.String(64), nullable=False)
-    user_surname = db.Column(db.String(64), nullable=False)
-    user_phone = db.Column(db.String(16))
-    user_description = db.Column(db.Text(2048))
-    user_photo = db.Column(db.LargeBinary(8000))
-    user_city = db.Column(db.String(64))
-    user_university = db.Column(db.String(255))
+    login = db.Column(db.String(64), nullable=False, unique=True)
+    email = db.Column(db.String(64), nullable=False, unique=True)
+    tag = db.Column(db.String(64), nullable=False, unique=True)
+    password_hash = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
+    surname = db.Column(db.String(64), nullable=False)
+    phone = db.Column(db.String(16))
+    description = db.Column(db.Text(2048))
+    photo = db.Column(db.LargeBinary(8000))
+    city_id = db.Column(db.String(64))
+    university = db.Column(db.String(255))
 
     def set_password(self, password):
-        self.user_password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.user_password_hash, password)
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f'<{self.id}:{self.user_name}>'
+        return f'<{self.id}:{self.name}>'
     
 
 class University(db.Model):
@@ -39,11 +39,11 @@ class University(db.Model):
     __tablename__ = 'universities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    university_name = db.Column(db.String(255), nullable=True, unique=True)
-    university_city = db.Column(db.String(128), nullable=False)
+    name = db.Column(db.String(255), nullable=True, unique=True)
+    city = db.Column(db.String(128), nullable=False)
 
     def __repr__(self):
-        return f'<{self.id}:{self.university_name}>'
+        return f'<{self.id}:{self.name}>'
     
 
 class City(db.Model):
@@ -51,10 +51,10 @@ class City(db.Model):
     __tablename__ = 'cities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    city_name = db.Column(db.String(128), nullable=False, unique=True)
+    name = db.Column(db.String(128), nullable=False, unique=True)
 
     def __repr__(self):
-        return f'<{self.id}:{self.city_name}>'
+        return f'<{self.id}:{self.name}>'
 
 
 class Interest(db.Model):
@@ -62,10 +62,10 @@ class Interest(db.Model):
     __tablename__ = 'interests'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    interest_name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
 
     def __repr__(self):
-        return f'<{self.id}:{self.interest_name}>'
+        return f'<{self.id}:{self.name}>'
 
 
 @login_manager.user_loader

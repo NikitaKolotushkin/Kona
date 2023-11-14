@@ -26,9 +26,9 @@
             
             {% if current_user.is_authenticated %}
             <div class="user_profile">
-                <a href="{{ url_for('main.user_profile', user_tag=current_user.user_tag) }}">
+                <a href="{{ url_for('main.user_profile', user_tag=current_user.tag) }}">
                     <img class="avatar" src="../static/img/avatar_cap.png" alt="Аватар">
-                    <a class="username" href="{{ url_for('main.user_profile', user_tag=current_user.user_tag) }}">{{ current_user.user_name }}</a>
+                    <a class="username" href="{{ url_for('main.user_profile', user_tag=current_user.tag) }}">{{ current_user.name }}</a>
                     <img class="university" src="../static/img/universities/spb/spbgu.png" alt="ВУЗ">
                 </a>
             </div>
