@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.js" type="text/javascript"></script>
+    <script src="https://snipp.ru/cdn/selectize.js/0.12.6/dist/js/selectize.min.js"></script>
+    
+    <div class="container">
+        <div class="questionnaire_wrapper">
+            
+            <div class="questionnaire_wrapper__left">
+                <div class="title_block">
+                    <img src="../static/img/logo_light.png" alt="">
+                    <h1>Узнаем кое-что</h1>
+                </div>
+                <div class="form_block">
+                    <form action="" class="questionnaire_form" id="questionnaire_form" method="post">
+                        <input type="text" name="phone" class="phone" placeholder="Телефон">
+                        <select id="city" name="city" form="questionnaire_form">
+                            <option value="" disabled selected>Город</option>
+                           
+                            {% for city in cities %}
+                                <option value={{city}}>{{city}}</option>
+                            {% endfor %}
+
+                          </select>
+                          <select name="university" id="university">
+                            <option value="" disabled selected>Университет</option>
+
+                            {% for university in universities %}
+                                <option value={{university}}>{{university}}</option>
+                            {% endfor %}
+
+                          </select>
+                          <input type="submit" class="form__button" value="Далее">
+                    </form>
+                </div>
+                
+            </div>
+            <div class="questionnaire_wrapper__right">
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(".phone").mask("+7(999)999-99-99");
+    </script>
+
+{% endblock %}
