@@ -124,6 +124,16 @@ def user_profile(user_tag):
     return render_template('user_profile.html', title=f'Kona | {user_data[5]} {user_data[6]}', data=user_data)
 
 
+@main.route('/questionnaire', methods=['GET', 'POST'])
+@login_required
+def questionnaire():
+
+    cities = ['1', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5']
+    universities = ['1', '2', '3', '4', '5']
+
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities, universities=universities)
+
+
 @main.route('/logout')
 @login_required
 def logout():
