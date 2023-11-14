@@ -39,11 +39,34 @@ class University(db.Model):
     __tablename__ = 'universities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    university_name = db.Column(db.String(255), nullable=False, unique=True)
+    university_name = db.Column(db.String(255), nullable=True, unique=True)
+    university_city = db.Column(db.String(128), nullable=False)
 
     def __repr__(self):
         return f'<{self.id}:{self.university_name}>'
     
+
+class City(db.Model):
+
+    __tablename__ = 'cities'
+
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    city_name = db.Column(db.String(128), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'<{self.id}:{self.city_name}>'
+
+
+class Interest(db.Model):
+
+    __tablename__ = 'interests'
+
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    interest_name = db.Column(db.String(255), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'<{self.id}:{self.interest_name}>'
+
 
 @login_manager.user_loader
 def load_user(user_id):
