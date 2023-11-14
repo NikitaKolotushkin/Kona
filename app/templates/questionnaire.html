@@ -36,7 +36,6 @@
                           <input type="submit" class="form__button" value="Далее">
                     </form>
                 </div>
-                
             </div>
             <div class="questionnaire_wrapper__right">
 
@@ -56,5 +55,9 @@
         })
 
     </script>
+
+    {% for category, msg in get_flashed_messages(True) %}
+        <div id="flash" class="flash {{category}}">{{msg}}</div>
+    {% endfor %}
 
 {% endblock %}

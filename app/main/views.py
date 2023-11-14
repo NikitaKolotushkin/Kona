@@ -9,7 +9,7 @@ from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, load_user
+from app.models import User, City, load_user
 from app.tools import validate_email
 from . import main
 
@@ -68,13 +68,14 @@ def registration():
                 return redirect(url_for('.login'))
 
             try:
-                user_tag = random.randint(10_000_000, 99_999_999)
+                user_tag = f'id{random.randint(10_000_000, 99_999_999)}'
                 while user_tag == User.query.filter_by(tag=user_tag).first():
-                    user_tag = random.randint(10_000_000, 99_999_999)
+                    user_tag = f'id{random.randint(10_000_000, 99_999_999)}'
 
                 user = User(login=user_login, email=user_email,
                             password_hash=generate_password_hash(user_password), name=user_name,
                             surname=user_surname, tag=user_tag)
+                
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
@@ -127,9 +128,20 @@ def user_profile(user_tag):
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
-
-    cities = ['1', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5']
+    
+    cities = [row[1] for row in engine.connect().execute(select(City))]
     universities = ['1', '2', '3', '4', '5']
+    
+    if request.method == 'POST':
+        
+        selected_phone = request.form['phone']
+        selected_city = request.form.get('city')
+        selected_university = request.form.get('university')
+
+        if len(selected_phone) != 0:
+
+            flash(f'{selected_phone} {selected_city} {selected_university}', 'error')
+        
 
     return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities, universities=universities)
 
