@@ -15,10 +15,10 @@
                     <h1>Узнаем кое-что</h1>
                 </div>
                 <div class="form_block">
-                    <form action="" class="questionnaire_form" id="questionnaire_form" method="post">
+                    <form action="" class="questionnaire_form" id="questionnaire_form" method="POST">
                         <input type="text" name="phone" class="phone" placeholder="Телефон">
                         <select id="city" name="city" form="questionnaire_form">
-                            <option value="" disabled selected>Город</option>
+                            <option value="" disabled selected>Ваш город</option>
                            
                             {% for city in cities %}
                                 <option value={{city}}>{{city}}</option>
@@ -26,10 +26,10 @@
 
                           </select>
                           <select name="university" id="university">
-                            <option value="" disabled selected>Университет</option>
+                            <option value="" disabled selected>Ваш университет</option>
 
                             {% for university in universities %}
-                                <option value={{university}}>{{university}}</option>
+                                <option value="{{university}}">{{university}}</option>
                             {% endfor %}
 
                           </select>
@@ -42,6 +42,8 @@
             </div>
         </div>
     </div>
+
+    {{ data }}
 
     <script>
         $(".phone").mask("+7(999)999-99-99");
