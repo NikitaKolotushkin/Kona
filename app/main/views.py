@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import json
 import random
 
 from flask import flash, render_template, redirect, request, url_for, make_response, session
@@ -129,18 +130,31 @@ def user_profile(user_tag):
 @login_required
 def questionnaire():
     
+    with open('cities.json') as f:
+        data=json.loads(f.read())
+
     cities = [row[1] for row in engine.connect().execute(select(City))]
-    universities = ['1', '2', '3', '4', '5']
+    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
     
     if request.method == 'POST':
-        
-        selected_phone = request.form['phone']
-        selected_city = request.form.get('city')
-        selected_university = request.form.get('university')
+        selected_phone = request.form.get("phone")
+        selected_city = request.form.get("city")
+        selected_university = request.form.get("university")
 
         if len(selected_phone) != 0:
+            try:
+                flash(selected_university, 'error')
+                current_user.phone = selected_phone
+                current_user.city_id = [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university = selected_university
+                db.session.flush()
+                db.session.commit()
 
-            flash(f'{selected_phone} {selected_city} {selected_university}', 'error')
+                return redirect(url_for('.user_profile', user_tag=current_user.tag))
+
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
         
 
     return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities, universities=universities)
