@@ -354,6 +354,10 @@ input.form__button:hover {
     /* border: 2px solid red; */
 }
 
+.questionnaire_wrapper__left {
+    margin: auto 0;
+}
+
 .title_block {
     width: 100%;
     margin: 0;
@@ -374,10 +378,11 @@ input.form__button:hover {
 
 .form_block {
     width: 90%;
-    border: 2px solid blue;
-    height: 50vh;
+    /* border: 2px solid blue; */
+    height: 40vh;
     margin: 0 auto;
     margin-top: 5vh;
+    text-align: center;
 }
 
 .form_block input, select {
@@ -403,6 +408,11 @@ input.form__button:hover {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+}
+
+.form_block input[type=submit] {
+    width: 30%;
+    margin: 0 auto;
 }
 
 .questionnaire_wrapper__right {
