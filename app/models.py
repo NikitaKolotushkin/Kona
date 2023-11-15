@@ -23,7 +23,6 @@ class User(db.Model, UserMixin):
     description = db.Column(db.Text(2048))
     photo = db.Column(db.LargeBinary(8000))
     city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
-    city = relationship("City")
     university = db.Column(db.String(255))
 
     def set_password(self, password):
@@ -43,7 +42,6 @@ class University(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True, unique=True)
     city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
-    city = relationship("City")
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
@@ -55,8 +53,8 @@ class City(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
     name = db.Column(db.String(128), nullable=False, unique=True)
-    users = relationship("User")
-    universities = relationship("University")
+    users = relationship("User", backref=db.backref('city'), lazy='dynamic')
+    universities = relationship("University", backref=db.backref('city'), lazy='dynamic')
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
