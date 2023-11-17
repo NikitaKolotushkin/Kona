@@ -6,8 +6,8 @@
         <div class="user_block">
             <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
             <div class="user_block__user_data">
-                <h2>{{ data[5] }} {{ data[6] }}</h2> 
-                <h4>{{ data[10] }}, {{ data[11] }}</h4>
+                <h2>{{profile_owner['name']}} {{profile_owner['surname']}}</h2> 
+                <h4>{{profile_owner['city_id']}}, {{profile_owner['university']}}</h4>
             </div>
         </div>
         
@@ -29,7 +29,5 @@
 
         <a href="{{ url_for('.logout') }}">Выход</a>
     </div>
-
-    
 
 {% endblock %}

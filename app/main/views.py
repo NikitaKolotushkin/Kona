@@ -122,8 +122,14 @@ def event_page(event_id):
 def user_profile(user_tag):
 
     user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
+    table_keys = [key for key in engine.connect().execute(select(User)).keys()]
 
-    return render_template('user_profile.html', title=f'Kona | {user_data[5]} {user_data[6]}', data=user_data)
+    profile_owner = {}
+
+    for i in range(len(user_data)):
+        profile_owner[table_keys[i]] = user_data[i]
+
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', profile_owner=profile_owner)
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
