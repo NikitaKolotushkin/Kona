@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import codecs
 import json
 import random
 
@@ -128,15 +128,17 @@ def user_profile(user_tag):
 
     for i in range(len(user_data)):
         profile_owner[table_keys[i]] = user_data[i]
+    city = list(engine.connect().execute(select(City).where(City.id == profile_owner['city_id'])))[0][1]
 
-    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', profile_owner=profile_owner)
+
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', city = city, profile_owner=profile_owner)
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
     
-    with open('cities.json') as f:
+    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
         data=json.loads(f.read())
 
     cities = [row[1] for row in engine.connect().execute(select(City))]
