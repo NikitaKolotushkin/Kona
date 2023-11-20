@@ -10,7 +10,7 @@ from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, City, load_user
+from app.models import User, City, Relations, load_user
 from app.tools import validate_email
 from . import main
 
@@ -76,7 +76,7 @@ def registration():
                 user = User(login=user_login, email=user_email,
                             password_hash=generate_password_hash(user_password), name=user_name,
                             surname=user_surname, tag=user_tag)
-                
+
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
@@ -120,30 +120,58 @@ def event_page(event_id):
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_tag):
-
     user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
+    city_exists = False
+    university_exists = False
+
+    if request.method == 'POST':
+        if request.form['add_friend'] == 'Добавить в друзья':
+            query = [row for row in engine.connect().execute(
+                select(Relations).where(Relations.user_id == current_user.tag and Relations.friend_id == user_tag))]
+            if query:
+                flash('Заявка уже отправлена', 'error')
+                pass
+            else:
+
+                try:
+                    relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                    db.session.add(relations)
+                    db.session.flush()
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+                    flash('Неизвестная ошибка', 'error')
 
     profile_owner = {}
 
     for i in range(len(user_data)):
         profile_owner[table_keys[i]] = user_data[i]
-    city = list(engine.connect().execute(select(City).where(City.id == profile_owner['city_id'])))[0][1]
 
+    if profile_owner['university']:
+        university_exists = True
 
-    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', city = city, profile_owner=profile_owner)
+    get_city = list(engine.connect().execute(select(City).where(City.id == profile_owner['city_id'])))
+    city = []
+
+    if len(get_city) > 0:
+        city = get_city[0][1]
+        city_exists = True
+
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
+                           city=city, city_exists=city_exists, university_exists=university_exists,
+                           profile_owner=profile_owner)
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
-    
     with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
-        data=json.loads(f.read())
+        data = json.loads(f.read())
 
     cities = [row[1] for row in engine.connect().execute(select(City))]
     universities = sum([u for u in data.values() if len(u[0]) != 0], [])
-    
+
     if request.method == 'POST':
         selected_phone = request.form.get("phone")
         selected_city = request.form.get("city")
@@ -151,9 +179,9 @@ def questionnaire():
 
         if len(selected_phone) != 0:
             try:
-                flash(selected_university, 'error')
                 current_user.phone = selected_phone
-                current_user.city_id = [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.city_id = \
+                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
                 current_user.university = selected_university
                 db.session.flush()
                 db.session.commit()
@@ -163,9 +191,9 @@ def questionnaire():
             except:
                 db.session.rollback()
                 flash('Неизвестная ошибка', 'error')
-        
 
-    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities, universities=universities)
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
+                           universities=universities)
 
 
 @main.route('/logout')

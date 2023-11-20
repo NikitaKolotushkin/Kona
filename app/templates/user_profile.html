@@ -6,15 +6,19 @@
         <div class="user_block">
             <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
             <div class="user_block__user_data">
-                <h2>{{profile_owner['name']}} {{profile_owner['surname']}}</h2> 
+                <h2>{{profile_owner['name']}} {{profile_owner['surname']}}</h2>
+                {% if city_exists and university_exists %}
                 <h4>{{city}}, {{profile_owner['university']}}</h4>
+                {% endif %}
             </div>
         </div>
         <div class="interactive_block">
+            {% if current_user.tag != profile_owner['tag'] %}
             <form action="" class="interactive_form" id="interactive_form" method="POST">
-                <input type="button" value="Добавить в друзья" name="add_friend">
-                <input type="button" value="Написать сообщение" name="write_message">
+                <input type="submit" value="Добавить в друзья" name="add_friend">
+                <input type="submit" value="Написать сообщение" name="write_message">
             </form>
+            {% endif %}
         </div>
 
         <div class="user_block__interests">

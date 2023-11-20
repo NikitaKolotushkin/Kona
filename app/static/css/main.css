@@ -347,7 +347,7 @@ input.form__button:hover {
     font-weight: 300;
 }
 
-.interactive_form input[type=button] {
+.interactive_form input[type=submit] {
     border: none;
     outline: none;
     background-color: #707070;

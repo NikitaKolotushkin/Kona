@@ -3,13 +3,12 @@
 
 from app import db, login_manager
 
-from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
+from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class User(db.Model, UserMixin):
-
     __tablename__ = 'users'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
@@ -33,10 +32,9 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
-    
+
 
 class University(db.Model):
-    
     __tablename__ = 'universities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
@@ -45,10 +43,9 @@ class University(db.Model):
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
-    
+
 
 class City(db.Model):
-
     __tablename__ = 'cities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
@@ -61,7 +58,6 @@ class City(db.Model):
 
 
 class Interest(db.Model):
-
     __tablename__ = 'interests'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
@@ -69,6 +65,15 @@ class Interest(db.Model):
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
+
+
+class Relations(db.Model):
+    __tablename__ = 'relations'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
+    user_id = db.Column(db.Integer(), nullable=False)
+    friend_id = db.Column(db.Integer(), nullable=False)
+    status = db.Column(db.String(50), default='pending')
 
 
 @login_manager.user_loader
