@@ -15,7 +15,13 @@
         <div class="interactive_block">
             {% if current_user.tag != profile_owner['tag'] %}
             <form action="" class="interactive_form" id="interactive_form" method="POST">
+                {% if pending_invite %}
+                <input type="submit" value="Принять заявку" name="accept_invite">
+                {% elif sent_invite or accepted_invite %}
+                <input type="submit" value="Добавить в друзья" name="add_friend" disabled>
+                {% else %}
                 <input type="submit" value="Добавить в друзья" name="add_friend">
+                {% endif %}
                 <input type="submit" value="Написать сообщение" name="write_message">
             </form>
             {% endif %}

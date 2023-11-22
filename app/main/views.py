@@ -125,24 +125,40 @@ def user_profile(user_tag):
     city_exists = False
     university_exists = False
 
-    if request.method == 'POST':
-        if request.form['add_friend'] == 'Добавить в друзья':
-            query = [row for row in engine.connect().execute(
-                select(Relations).where(Relations.user_id == current_user.tag and Relations.friend_id == user_tag))]
-            if query:
-                flash('Заявка уже отправлена', 'error')
-                pass
-            else:
+    pending_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'pending'))]
+    sent_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+        Relations.status == 'pending'))]
+    accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                Relations.status == 'accepted'))]
 
+    if request.method == 'POST':
+        if pending_invite:
+            if request.form['accept_invite'] == 'Принять заявку':
                 try:
-                    relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                    db.session.add(relations)
-                    db.session.flush()
+                    operation_id = pending_invite[0][0]
+                    relation = Relations.query.get(operation_id)
+                    relation.status = 'accepted'
                     db.session.commit()
                 except:
                     db.session.rollback()
                     flash('Неизвестная ошибка', 'error')
-
+        else:
+            if request.form['add_friend'] == 'Добавить в друзья':
+                if sent_invite or accepted_invite:
+                    flash('Заявка уже отправлена', 'error')
+                else:
+                    try:
+                        relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                        db.session.add(relations)
+                        db.session.flush()
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
+                        flash('Неизвестная ошибка', 'error')
     profile_owner = {}
 
     for i in range(len(user_data)):
@@ -160,6 +176,7 @@ def user_profile(user_tag):
 
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,
+                           pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
                            profile_owner=profile_owner)
 
 
