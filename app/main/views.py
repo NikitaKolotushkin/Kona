@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import codecs
 import json
 import random
@@ -96,7 +97,21 @@ def registration():
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
-    return render_template('friends.html', title='Kona | Друзья')
+    
+    query = [row for row in engine.connect().execute(
+                select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+                Relations.status == 'accepted'))]
+    
+    friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
+    friend_list = [{} for _ in range(len(query))]
+
+    for f in range(len(friend_tags)):
+        friend_data = [row for row in engine.connect().execute(select(User).where(User.tag == friend_tags[f - 1]))][0]
+        friend_list[f - 1]['name'] = friend_data[5]
+        friend_list[f - 1]['surname'] = friend_data[6]
+        friend_list[f - 1]['photo'] = friend_data[9]
+
+    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
 
 
 @main.route('/messenger', methods=['GET', 'POST'])
@@ -159,6 +174,7 @@ def user_profile(user_tag):
                     except:
                         db.session.rollback()
                         flash('Неизвестная ошибка', 'error')
+    
     profile_owner = {}
 
     for i in range(len(user_data)):

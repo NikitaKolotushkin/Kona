@@ -2,6 +2,19 @@
 
 {% block index_content %}
 
-<h1>Друзья</h1>
+<div class="friends_content">
+    {% for friend in friend_list %}
+        <div class="friends_content__user">
+            <img src="..//static/img/avatar_cap.png" >
+            <div class="friend_info">
+                <a href="">{{ friend['name'] }} {{ friend['surname'] }}</a>
+                <a href="">Написать сообщение</a>
+            </div>
+        </div>
+        {% if friend != friend_list[-1] %}
+            <div class="line"></div>
+        {% endif %}
+    {% endfor %}
+</div>
 
 {% endblock %}
