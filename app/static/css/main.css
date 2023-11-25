@@ -498,6 +498,11 @@ input.form__button:hover {
     flex-direction: column;
 }
 
+.friend_info p {
+    margin: 0;
+    color: #ccc;
+}
+
 .friend_info a:hover {
     text-decoration: underline;
 }

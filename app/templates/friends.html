@@ -5,9 +5,10 @@
 <div class="friends_content">
     {% for friend in friend_list %}
         <div class="friends_content__user">
-            <img src="..//static/img/avatar_cap.png" >
+            <img src="..//static/img/avatar_cap.png">
             <div class="friend_info">
-                <a href="">{{ friend['name'] }} {{ friend['surname'] }}</a>
+                <a href="/user/{{ friend['tag'] }}">{{ friend['name'] }} {{ friend['surname'] }}</a>
+                <p>{{ friend['university'] if friend['university'] != None else '' }} </p>
                 <a href="">Написать сообщение</a>
             </div>
         </div>

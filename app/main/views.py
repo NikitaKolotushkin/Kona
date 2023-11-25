@@ -107,9 +107,11 @@ def friends():
 
     for f in range(len(friend_tags)):
         friend_data = [row for row in engine.connect().execute(select(User).where(User.tag == friend_tags[f - 1]))][0]
+        friend_list[f - 1]['tag'] = friend_data[3]
         friend_list[f - 1]['name'] = friend_data[5]
         friend_list[f - 1]['surname'] = friend_data[6]
         friend_list[f - 1]['photo'] = friend_data[9]
+        friend_list[f - 1]['university'] = friend_data[11]
 
     return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
 
