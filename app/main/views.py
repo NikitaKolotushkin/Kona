@@ -145,11 +145,13 @@ def user_profile(user_tag):
                                 Relations.status == 'pending'))]
     sent_invite = [row for row in engine.connect().execute(
         select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
-        Relations.status == 'pending'))]
+                                Relations.status == 'pending'))]
     accepted_invite = [row for row in engine.connect().execute(
         select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
                                 Relations.status == 'accepted'))]
-
+    reverse_accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
     if request.method == 'POST':
         if pending_invite:
             if request.form['accept_invite'] == 'Принять заявку':
@@ -163,7 +165,7 @@ def user_profile(user_tag):
                     flash('Неизвестная ошибка', 'error')
         else:
             if request.form['add_friend'] == 'Добавить в друзья':
-                if sent_invite or accepted_invite:
+                if sent_invite or accepted_invite or reverse_accepted_invite:
                     flash('Заявка уже отправлена', 'error')
                 else:
                     try:
@@ -193,6 +195,7 @@ def user_profile(user_tag):
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
+                           reverse_accepted_invite=reverse_accepted_invite,
                            profile_owner=profile_owner)
 
 
