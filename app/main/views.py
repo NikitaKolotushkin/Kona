@@ -198,7 +198,7 @@ def user_profile(user_tag):
                            city=city, city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
                            reverse_accepted_invite=reverse_accepted_invite,
-                           profile_owner=profile_owner)
+                           profile_owner=profile_owner, friend_count=3)
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])

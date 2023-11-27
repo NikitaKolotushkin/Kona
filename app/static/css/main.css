@@ -61,9 +61,9 @@ a {
 
 nav {
     background: rgba(88, 88, 88, .5);
-    backdrop-filter: blur(150px);
+    backdrop-filter: blur(15px);
     height: 8vh;
-    z-index:9999;
+    /* z-index:9999; */
 }
 
 .nav__logo_section {
@@ -151,7 +151,7 @@ main {
 }
 
 .sidebar_left__menu {
-    height: 25vh;
+    height: 20vh;
 }
 
 .sidebar h3 {
@@ -194,6 +194,41 @@ main {
     height: 25vh;
 }
 
+.notification {
+    width: 50%;
+    height: 8vh;
+    font-weight: 700;
+    font-size: 2vh;
+    background: #06F;
+    border-radius: 2.5vh;
+    padding: 7px 12px;
+    margin-bottom: 2vh;
+}
+
+.sn2 {
+    background: #AD00FF;
+}
+
+.sn3 {
+    background: #FF5959;
+}
+
+.sn4 {
+    background: #467904;
+}
+
+.sn5 {
+    background: #FDA432;
+}
+
+.sn6 {
+    background: #07F;
+}
+
+.sn7 {
+    background: #F00;
+}
+
 .sidebar_left__notifications {
     height: 25vh;
 }
@@ -226,6 +261,13 @@ main {
 
 .event_block_1 {
     background: linear-gradient(45deg, #000 5%, rgba(0, 0, 0, 0.00) 84.5%), url('../img/event_block_1.jpeg'), lightgray 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.event_block_2 {
+    background: linear-gradient(45deg, #000 5%, rgba(0, 0, 0, 0.00) 84.5%), url('../img/event_block_2.jpg'), lightgray 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -372,6 +414,40 @@ input.form__button:hover {
     margin-right: 20px;
 }
 
+.user_block__friends span {
+    color: #595959;
+}
+
+/* .friends_list {
+    height: 10vh;
+    width: 100%;
+    display: flex;
+} */
+
+.visited__notifications {
+    width: 100%;
+    height: 10vh;
+    display: flex;
+}
+
+.visited__notifications div {
+    width: 20%;
+    height: 100%;
+    margin-right: 15px;
+}
+
+.experience__notifications {
+    width: 100%;
+    height: 10vh;
+    display: flex;
+}
+
+.experience__notifications div {
+    width: 20%;
+    height: 100%;
+    margin-right: 15px;
+}
+
 /* QUESTIONNAIRE */
 
 .questionnaire_wrapper {
@@ -490,7 +566,7 @@ input.form__button:hover {
 .friends_content__user img {
     height: 10vh;
     border-radius: 50%;
-    margin-right: 5%;
+    margin-right: 3%;
 }
 
 .friend_info {
