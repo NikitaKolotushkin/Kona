@@ -10,6 +10,11 @@ html {
     font-family: 'Onest';
 }
 
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
 body {
     background: #1A1A1A;
     color: #fff;
@@ -241,7 +246,7 @@ main {
 .main_content {
     width: 56%;
     height: 92vh;
-    overflow: auto;
+    overflow: scroll;
 }
 
 .event_block {

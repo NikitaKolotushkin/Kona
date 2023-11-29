@@ -5,13 +5,13 @@ import codecs
 import json
 import random
 
-from flask import flash, render_template, redirect, request, url_for, make_response, session
+from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, City, Relations, load_user
+from app.models import User, City, Relations
 from app.tools import validate_email
 from . import main
 
@@ -97,11 +97,10 @@ def registration():
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
-    
     query = [row for row in engine.connect().execute(
-                select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
-                Relations.status == 'accepted'))]
-    
+        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
+
     friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
     friend_list = [{} for _ in range(len(query))]
 
@@ -139,26 +138,19 @@ def event_page(event_id):
 def user_profile(user_tag):
     user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
-    city_exists = False
     university_exists = False
 
-    pending_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
-                                Relations.status == 'pending'))]
-    sent_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
-                                Relations.status == 'pending'))]
-    accepted_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
-                                Relations.status == 'accepted'))]
-    reverse_accepted_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
-                                Relations.status == 'accepted'))]
+    pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
+    sent_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='pending').first()
+    accepted_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='accepted').first()
+    reverse_accepted_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag,
+                                                        status='accepted').first()
+
     if request.method == 'POST':
         if pending_invite:
             if request.form['accept_invite'] == 'Принять заявку':
                 try:
-                    operation_id = pending_invite[0][0]
+                    operation_id = pending_invite[0].id
                     relation = Relations.query.get(operation_id)
                     relation.status = 'accepted'
                     db.session.commit()
@@ -178,7 +170,7 @@ def user_profile(user_tag):
                     except:
                         db.session.rollback()
                         flash('Неизвестная ошибка', 'error')
-    
+
     profile_owner = {}
 
     for i in range(len(user_data)):
@@ -187,12 +179,8 @@ def user_profile(user_tag):
     if profile_owner['university']:
         university_exists = True
 
-    get_city = list(engine.connect().execute(select(City).where(City.id == profile_owner['city_id'])))
-    city = []
-
-    if len(get_city) > 0:
-        city = get_city[0][1]
-        city_exists = True
+    city = City.query.get(profile_owner['city_id'])
+    city_exists = city is not None if city else False
 
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,
