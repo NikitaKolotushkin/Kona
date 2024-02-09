@@ -11,7 +11,7 @@ html {
 }
 
 body {
-    background: #1A1A1A;
+    background: rgb(19, 18, 18);
     color: #fff;
     z-index: 4;
     /* overflow: hidden; */
@@ -60,7 +60,7 @@ a {
 }
 
 nav {
-    background: rgba(88, 88, 88, .5);
+    background: #1A1D21;
     backdrop-filter: blur(15px);
     height: 8vh;
     /* z-index:9999; */
@@ -90,7 +90,7 @@ nav {
 .nav_search input {
     width: 100%;
     padding-left: 3%;
-    background-color: #808080;
+    background-color: #404040;
     color: #fff;
     border: none;
     border-radius: 2.5vh;
@@ -392,7 +392,7 @@ input.form__button:hover {
 .interactive_form input[type=submit] {
     border: none;
     outline: none;
-    background-color: #707070;
+    background-color: #3C434D;
     color: #fff;
     font-weight: 500;
     font-size: 18px;
