@@ -9,7 +9,6 @@ from sqlalchemy import create_engine
 
 from config import current_config
 
-
 db = SQLAlchemy()
 engine = create_engine(current_config.SQLALCHEMY_DATABASE_URI)
 login_manager = LoginManager()
@@ -17,7 +16,6 @@ migrate = Migrate()
 
 
 def create_app(config_class):
-
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -26,9 +24,7 @@ def create_app(config_class):
     login_manager.login_view = 'main.login'
     migrate.init_app(app, db)
 
-
     from .main import main as main_blueprint
-
 
     app.register_blueprint(main_blueprint)
     return app

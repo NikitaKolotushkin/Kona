@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import codecs
+import json
 import random
 
-from flask import flash, render_template, redirect, request, url_for, make_response, session
+from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.sql import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, load_user
+from app.models import User, City, Relations
 from app.tools import validate_email
 from . import main
 
@@ -27,17 +29,17 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(user_email=email).first()
+        user = User.query.filter_by(email=email).first()
 
         if user:
-            if check_password_hash(user.user_password_hash, password):
+            if check_password_hash(user.password_hash, password):
 
-                selected_user = select(User.user_tag).where(User.user_email == email)
+                selected_user = select(User.tag).where(User.email == email)
                 tag = [row for row in engine.connect().execute(selected_user)][0][0]
 
                 login_user(user, remember=True)
                 session.permanent = True
-                session['email'] = user.user_email
+                session['email'] = user.email
 
                 return redirect(url_for('.user_profile', user_tag=tag))
             else:
@@ -63,23 +65,28 @@ def registration():
                 and validate_email(user_email) \
                 and (user_password == user_password_confirm):
 
-            if User.query.filter_by(user_email=user_email).first():
+            if User.query.filter_by(email=user_email).first():
                 flash('Пользователь уже существует', 'error')
                 return redirect(url_for('.login'))
 
             try:
-                user_tag = random.randint(10_000_000, 99_999_999)
-                while user_tag == User.query.filter_by(user_tag=user_tag).first():
-                    user_tag = random.randint(10_000_000, 99_999_999)
+                user_tag = f'id{random.randint(10_000_000, 99_999_999)}'
+                while user_tag == User.query.filter_by(tag=user_tag).first():
+                    user_tag = f'id{random.randint(10_000_000, 99_999_999)}'
 
-                user = User(user_login=user_login, user_email=user_email,
-                            user_password_hash=generate_password_hash(user_password), user_name=user_name,
-                            user_surname=user_surname, user_tag=user_tag)
+                user = User(login=user_login, email=user_email,
+                            password_hash=generate_password_hash(user_password), name=user_name,
+                            surname=user_surname, tag=user_tag)
+
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
 
-                return redirect(url_for('.login'))
+                login_user(user, remember=True)
+                session.permanent = True
+                session['email'] = user.email
+
+                return redirect(url_for('.questionnaire'))
 
             except:
                 db.session.rollback()
@@ -94,7 +101,22 @@ def registration():
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
-    return render_template('friends.html', title='Kona | Друзья')
+    query = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
+
+    friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
+    friend_list = [{} for _ in range(len(query))]
+
+    for f in range(len(friend_tags)):
+        friend_data = [row for row in engine.connect().execute(select(User).where(User.tag == friend_tags[f - 1]))][0]
+        friend_list[f - 1]['tag'] = friend_data[3]
+        friend_list[f - 1]['name'] = friend_data[5]
+        friend_list[f - 1]['surname'] = friend_data[6]
+        friend_list[f - 1]['photo'] = friend_data[9]
+        friend_list[f - 1]['university'] = friend_data[11]
+
+    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
 
 
 @main.route('/messenger', methods=['GET', 'POST'])
@@ -118,20 +140,90 @@ def event_page(event_id):
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_tag):
+    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
+    table_keys = [key for key in engine.connect().execute(select(User)).keys()]
+    university_exists = False
 
-    user_data = [row for row in engine.connect().execute(select(User).where(User.user_tag == user_tag))][0]
+    pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
+    sent_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='pending').first()
+    accepted_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='accepted').first()
+    reverse_accepted_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag,
+                                                        status='accepted').first()
 
-    return render_template('user_profile.html', title=f'Kona | {user_data[5]} {user_data[6]}', data=user_data)
+    if request.method == 'POST':
+        if pending_invite:
+            if request.form['accept_invite'] == 'Принять заявку':
+                try:
+                    operation_id = pending_invite[0].id
+                    relation = Relations.query.get(operation_id)
+                    relation.status = 'accepted'
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+                    flash('Неизвестная ошибка', 'error')
+        else:
+            if request.form['add_friend'] == 'Добавить в друзья':
+                if sent_invite or accepted_invite or reverse_accepted_invite:
+                    flash('Заявка уже отправлена', 'error')
+                else:
+                    try:
+                        relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                        db.session.add(relations)
+                        db.session.flush()
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
+                        flash('Неизвестная ошибка', 'error')
+
+    profile_owner = {}
+
+    for i in range(len(user_data)):
+        profile_owner[table_keys[i]] = user_data[i]
+
+    if profile_owner['university']:
+        university_exists = True
+
+    city = City.query.get(profile_owner['city_id'])
+    city_exists = city is not None if city else False
+
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
+                           city=city, city_exists=city_exists, university_exists=university_exists,
+                           pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
+                           reverse_accepted_invite=reverse_accepted_invite,
+                           profile_owner=profile_owner, friend_count=3)
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
+    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
+        data = json.loads(f.read())
 
-    cities = ['1', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5', '2', '3', '4', '5']
-    universities = ['1', '2', '3', '4', '5']
+    cities = [row[1] for row in engine.connect().execute(select(City))]
+    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
 
-    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities, universities=universities)
+    if request.method == 'POST':
+        selected_phone = request.form.get("phone")
+        selected_city = request.form.get("city")
+        selected_university = request.form.get("university")
+
+        if len(selected_phone) != 0:
+            try:
+                current_user.phone = selected_phone
+                current_user.city_id = \
+                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university = selected_university
+                db.session.flush()
+                db.session.commit()
+
+                return redirect(url_for('.user_profile', user_tag=current_user.tag))
+
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
+
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
+                           universities=universities)
 
 
 @main.route('/logout')
