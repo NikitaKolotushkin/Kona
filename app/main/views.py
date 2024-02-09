@@ -82,7 +82,11 @@ def registration():
                 db.session.flush()
                 db.session.commit()
 
-                return redirect(url_for('.login'))
+                login_user(user, remember=True)
+                session.permanent = True
+                session['email'] = user.email
+
+                return redirect(url_for('.questionnaire'))
 
             except:
                 db.session.rollback()
