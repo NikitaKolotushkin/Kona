@@ -183,7 +183,7 @@ def user_profile(user_tag):
     if profile_owner['university']:
         university_exists = True
 
-    city = City.query.get(profile_owner['city_id'])
+    city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
     city_exists = city is not None if city else False
 
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
