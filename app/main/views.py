@@ -143,6 +143,8 @@ def user_profile(user_tag):
     user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
     university_exists = False
+    city_exists = False
+    city = None
 
     pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
     sent_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='pending').first()
@@ -183,8 +185,9 @@ def user_profile(user_tag):
     if profile_owner['university']:
         university_exists = True
 
-    city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
-    city_exists = city is not None if city else False
+    if profile_owner['city_id']:
+        city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
+        city_exists = city is not None if city else False
 
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,
