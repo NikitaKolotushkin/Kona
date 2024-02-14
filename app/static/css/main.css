@@ -413,10 +413,16 @@ input.form__button:hover {
     display: flex;
 }
 
+.interests_list button {
+    outline: none;
+    border: none;
+    background: none;
+    margin-right: 20px;
+}
+
 .interests_list__element {
     width: 14vh;
-    height: 14vh;
-    margin-right: 20px;
+    height: 14vh; 
 }
 
 .user_block__friends span {

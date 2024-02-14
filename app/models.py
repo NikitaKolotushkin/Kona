@@ -65,6 +65,15 @@ class Interest(db.Model):
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
+    
+class Event(db.Model):
+    __tablename__ = 'events'
+
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<{self.id}:{self.name}>'
 
 
 class Relations(db.Model):

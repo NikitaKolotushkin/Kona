@@ -18,7 +18,7 @@
                 {% if pending_invite %}
                 <input type="submit" value="Принять заявку" name="accept_invite">
                 {% elif sent_invite or accepted_invite or reverse_accepted_invite %}
-                <input type="submit" value="Добавить в друзья" name="add_friend" disabled>
+                <input type="submit" value="Добавить в друзья" name="add_friend" style="display: none;">
                 {% else %}
                 <input type="submit" value="Добавить в друзья" name="add_friend">
                 {% endif %}
@@ -30,12 +30,7 @@
         <div class="user_block__interests">
             <h3>Интересы</h3>
             <div class="interests_list">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
-                <img src="../static/img/Squircle.png" alt="" class="interests_list__element">
+                <button><img src="../static/img/Squircle.png" alt="" class="interests_list__element"></button>
             </div>
         </div>
         <div class="user_block__friends">

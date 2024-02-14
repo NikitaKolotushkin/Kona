@@ -142,8 +142,7 @@ def event_page(event_id):
 def user_profile(user_tag):
     user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
-    university_exists = False
-    city_exists = False
+    university_exists, city_exists = False, False
     city = None
 
     pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
