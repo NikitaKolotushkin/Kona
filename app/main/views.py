@@ -145,36 +145,41 @@ def user_profile(user_tag):
     university_exists, city_exists = False, False
     city = None
 
-    pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
-    sent_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='pending').first()
-    accepted_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='accepted').first()
-    reverse_accepted_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag,
-                                                        status='accepted').first()
+
+    pending_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'pending'))]
+    sent_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                Relations.status == 'pending'))]
+    accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                Relations.status == 'accepted'))]
+    reverse_accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
+
 
     if request.method == 'POST':
-        if pending_invite:
-            if request.form['accept_invite'] == 'Принять заявку':
+        if request.form['accept_invite'] == 'Принять заявку':
+            try:
+                operation_id = pending_invite[0][0]
+                relation = Relations.query.get(operation_id)
+                relation.status = 'accepted'
+                db.session.commit()
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
+        else:
+            if request.form['add_friend'] == 'Добавить в друзья':
                 try:
-                    operation_id = pending_invite[0].id
-                    relation = Relations.query.get(operation_id)
-                    relation.status = 'accepted'
+                    relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                    db.session.add(relations)
+                    db.session.flush()
                     db.session.commit()
                 except:
                     db.session.rollback()
                     flash('Неизвестная ошибка', 'error')
-        else:
-            if request.form['add_friend'] == 'Добавить в друзья':
-                if sent_invite or accepted_invite or reverse_accepted_invite:
-                    flash('Заявка уже отправлена', 'error')
-                else:
-                    try:
-                        relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                        db.session.add(relations)
-                        db.session.flush()
-                        db.session.commit()
-                    except:
-                        db.session.rollback()
-                        flash('Неизвестная ошибка', 'error')
 
     profile_owner = {}
 
@@ -205,13 +210,15 @@ def questionnaire():
     universities = sum([u for u in data.values() if len(u[0]) != 0], [])
 
     if request.method == 'POST':
-        selected_phone = request.form.get("phone")
+        phone = request.form.get("phone")
+        birthdate = request.form.get("birthdate")
         selected_city = request.form.get("city")
         selected_university = request.form.get("university")
 
-        if len(selected_phone) != 0:
+        if len(phone) != 0:
             try:
-                current_user.phone = selected_phone
+                current_user.phone = phone
+                current_user.birthdate = birthdate
                 current_user.city_id = \
                     [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
                 current_user.university = selected_university

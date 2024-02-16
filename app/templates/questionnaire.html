@@ -17,6 +17,7 @@
                 <div class="form_block">
                     <form action="" class="questionnaire_form" id="questionnaire_form" method="POST">
                         <input type="text" name="phone" class="phone" placeholder="Телефон">
+                        <input type="text" name="birthdate" class="birthdate" placeholder="Дата рождения">
                         <select id="city" name="city" form="questionnaire_form">
                             <option value="" disabled selected>Ваш город</option>
                            
@@ -47,6 +48,7 @@
 
     <script>
         $(".phone").mask("+7(999)999-99-99");
+        $(".birthdate").mask("9999.39.99");
 
         var city_selector = document.querySelector("#city");
         var university_selector = document.querySelector("#university");
