@@ -222,6 +222,12 @@ def messenger():
     return render_template('messenger.html', title='Kona | Мессенджер')
 
 
+@main.route('/message/<user_tag>', methods=['GET', 'POST'])
+@login_required
+def message(user_tag):
+    return 1
+
+
 @main.route('/events', methods=['GET', 'POST'])
 @login_required
 def events():
