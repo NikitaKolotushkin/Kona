@@ -98,6 +98,103 @@ def registration():
     return render_template('user_registration.html', title='Kona | Регистрация')
 
 
+@main.route('/questionnaire', methods=['GET', 'POST'])
+@login_required
+def questionnaire():
+    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
+        data = json.loads(f.read())
+
+    cities = [row[1] for row in engine.connect().execute(select(City))]
+    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
+
+    if request.method == 'POST':
+        phone = request.form.get("phone")
+        birthdate = request.form.get("birthdate")
+        selected_city = request.form.get("city")
+        selected_university = request.form.get("university")
+
+        if len(phone) != 0:
+            try:
+                current_user.phone = phone
+                current_user.birthdate = birthdate
+                current_user.city_id = \
+                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university = selected_university
+                db.session.flush()
+                db.session.commit()
+
+                return redirect(url_for('.user_profile', user_tag=current_user.tag))
+
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
+
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
+                           universities=universities)
+
+
+@main.route('/user/<user_tag>', methods=['GET', 'POST'])
+@login_required
+def user_profile(user_tag):
+    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
+    table_keys = [key for key in engine.connect().execute(select(User)).keys()]
+    university_exists, city_exists = False, False
+    city = None
+
+    pending_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'pending'))]
+    sent_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                Relations.status == 'pending'))]
+    accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                Relations.status == 'accepted'))]
+    reverse_accepted_invite = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
+
+    if request.method == 'POST':
+        result = list(request.form.keys())[0]
+        if result == 'accept_invite':
+            try:
+                operation_id = pending_invite[0][0]
+                relation = Relations.query.get(operation_id)
+                relation.status = 'accepted'
+                db.session.commit()
+            except:
+                db.session.rollback()
+        elif result == 'add_friend':
+            try:
+                relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                db.session.add(relations)
+                db.session.flush()
+                db.session.commit()
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
+        elif result == 'write_message':
+            return redirect(url_for('.messenger'))
+
+    profile_owner = {}
+
+    for i in range(len(user_data)):
+        profile_owner[table_keys[i]] = user_data[i]
+
+    if profile_owner['university']:
+        university_exists = True
+
+    if profile_owner['city_id']:
+        city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
+        city_exists = city is not None if city else False
+
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
+                           city=city, city_exists=city_exists, university_exists=university_exists,
+                           pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
+                           reverse_accepted_invite=reverse_accepted_invite,
+                           profile_owner=profile_owner, friend_count=3)
+
+
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
@@ -125,6 +222,12 @@ def messenger():
     return render_template('messenger.html', title='Kona | Мессенджер')
 
 
+@main.route('/message/<user_tag>', methods=['GET', 'POST'])
+@login_required
+def message(user_tag):
+    return 1
+
+
 @main.route('/events', methods=['GET', 'POST'])
 @login_required
 def events():
@@ -135,97 +238,6 @@ def events():
 @login_required
 def event_page(event_id):
     return render_template('event_page.html', title='Ивент')
-
-
-@main.route('/user/<user_tag>', methods=['GET', 'POST'])
-@login_required
-def user_profile(user_tag):
-    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
-    table_keys = [key for key in engine.connect().execute(select(User)).keys()]
-    university_exists, city_exists = False, False
-    city = None
-
-    pending_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag, status='pending').first()
-    sent_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='pending').first()
-    accepted_invite = Relations.query.filter_by(user_id=current_user.tag, friend_id=user_tag, status='accepted').first()
-    reverse_accepted_invite = Relations.query.filter_by(user_id=user_tag, friend_id=current_user.tag,
-                                                        status='accepted').first()
-
-    if request.method == 'POST':
-        if pending_invite:
-            if request.form['accept_invite'] == 'Принять заявку':
-                try:
-                    operation_id = pending_invite[0].id
-                    relation = Relations.query.get(operation_id)
-                    relation.status = 'accepted'
-                    db.session.commit()
-                except:
-                    db.session.rollback()
-                    flash('Неизвестная ошибка', 'error')
-        else:
-            if request.form['add_friend'] == 'Добавить в друзья':
-                if sent_invite or accepted_invite or reverse_accepted_invite:
-                    flash('Заявка уже отправлена', 'error')
-                else:
-                    try:
-                        relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                        db.session.add(relations)
-                        db.session.flush()
-                        db.session.commit()
-                    except:
-                        db.session.rollback()
-                        flash('Неизвестная ошибка', 'error')
-
-    profile_owner = {}
-
-    for i in range(len(user_data)):
-        profile_owner[table_keys[i]] = user_data[i]
-
-    if profile_owner['university']:
-        university_exists = True
-
-    if profile_owner['city_id']:
-        city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
-        city_exists = city is not None if city else False
-
-    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
-                           city=city, city_exists=city_exists, university_exists=university_exists,
-                           pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
-                           reverse_accepted_invite=reverse_accepted_invite,
-                           profile_owner=profile_owner, friend_count=3)
-
-
-@main.route('/questionnaire', methods=['GET', 'POST'])
-@login_required
-def questionnaire():
-    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
-        data = json.loads(f.read())
-
-    cities = [row[1] for row in engine.connect().execute(select(City))]
-    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
-
-    if request.method == 'POST':
-        selected_phone = request.form.get("phone")
-        selected_city = request.form.get("city")
-        selected_university = request.form.get("university")
-
-        if len(selected_phone) != 0:
-            try:
-                current_user.phone = selected_phone
-                current_user.city_id = \
-                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-                current_user.university = selected_university
-                db.session.flush()
-                db.session.commit()
-
-                return redirect(url_for('.user_profile', user_tag=current_user.tag))
-
-            except:
-                db.session.rollback()
-                flash('Неизвестная ошибка', 'error')
-
-    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
-                           universities=universities)
 
 
 @main.route('/logout')

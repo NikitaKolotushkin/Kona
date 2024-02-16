@@ -16,7 +16,7 @@ html {
 }
 
 body {
-    background: rgb(19, 18, 18);
+    background: rgb(18, 18, 18);
     color: #fff;
     z-index: 4;
     /* overflow: hidden; */
@@ -93,9 +93,9 @@ nav {
 }
 
 .nav_search input {
-    width: 100%;
+    width: 80%;
     padding-left: 3%;
-    background-color: #404040;
+    background-color: #323840;
     color: #fff;
     border: none;
     border-radius: 2.5vh;
@@ -104,7 +104,24 @@ nav {
 
 .nav_search input::placeholder {
     color: #C6C5C5;
+    font-weight: 300;
     font-size: 3vh;
+}
+
+.nav_search button {
+    background: none;
+    border: none;
+    height: 4vh;
+}
+
+.star {
+    width: 43px;
+    height: 35px;
+}
+
+.bell {
+    width: 30px;
+    height: 35px;
 }
 
 .nav_search a {
@@ -409,7 +426,6 @@ input.form__button:hover {
 
 .interests_list {
     width: 100%;
-    height: 14vh;
     display: flex;
 }
 
@@ -554,7 +570,7 @@ input.form__button:hover {
     flex-wrap: wrap;
     overflow: auto;
     align-content: flex-start;
-    background: rgba(88, 88, 88, .5);
+    background: #1A1D21;
     border-radius: 2.5vh;
 
     /* border: 2px solid red; */
