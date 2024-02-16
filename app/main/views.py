@@ -98,43 +98,39 @@ def registration():
     return render_template('user_registration.html', title='Kona | Регистрация')
 
 
-@main.route('/friends', methods=['GET', 'POST'])
+@main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
-def friends():
-    query = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
-                                Relations.status == 'accepted'))]
+def questionnaire():
+    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
+        data = json.loads(f.read())
 
-    friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
-    friend_list = [{} for _ in range(len(query))]
+    cities = [row[1] for row in engine.connect().execute(select(City))]
+    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
 
-    for f in range(len(friend_tags)):
-        friend_data = [row for row in engine.connect().execute(select(User).where(User.tag == friend_tags[f - 1]))][0]
-        friend_list[f - 1]['tag'] = friend_data[3]
-        friend_list[f - 1]['name'] = friend_data[5]
-        friend_list[f - 1]['surname'] = friend_data[6]
-        friend_list[f - 1]['photo'] = friend_data[9]
-        friend_list[f - 1]['university'] = friend_data[11]
+    if request.method == 'POST':
+        phone = request.form.get("phone")
+        birthdate = request.form.get("birthdate")
+        selected_city = request.form.get("city")
+        selected_university = request.form.get("university")
 
-    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
+        if len(phone) != 0:
+            try:
+                current_user.phone = phone
+                current_user.birthdate = birthdate
+                current_user.city_id = \
+                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university = selected_university
+                db.session.flush()
+                db.session.commit()
 
+                return redirect(url_for('.user_profile', user_tag=current_user.tag))
 
-@main.route('/messenger', methods=['GET', 'POST'])
-@login_required
-def messenger():
-    return render_template('messenger.html', title='Kona | Мессенджер')
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка', 'error')
 
-
-@main.route('/events', methods=['GET', 'POST'])
-@login_required
-def events():
-    return render_template('events.html', title='Kona | Мероприятия')
-
-
-@main.route('/event/<event_id>', methods=['GET', 'POST'])
-@login_required
-def event_page(event_id):
-    return render_template('event_page.html', title='Ивент')
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
+                           universities=universities)
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
@@ -199,39 +195,43 @@ def user_profile(user_tag):
                            profile_owner=profile_owner, friend_count=3)
 
 
-@main.route('/questionnaire', methods=['GET', 'POST'])
+@main.route('/friends', methods=['GET', 'POST'])
 @login_required
-def questionnaire():
-    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
-        data = json.loads(f.read())
+def friends():
+    query = [row for row in engine.connect().execute(
+        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+                                Relations.status == 'accepted'))]
 
-    cities = [row[1] for row in engine.connect().execute(select(City))]
-    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
+    friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
+    friend_list = [{} for _ in range(len(query))]
 
-    if request.method == 'POST':
-        phone = request.form.get("phone")
-        birthdate = request.form.get("birthdate")
-        selected_city = request.form.get("city")
-        selected_university = request.form.get("university")
+    for f in range(len(friend_tags)):
+        friend_data = [row for row in engine.connect().execute(select(User).where(User.tag == friend_tags[f - 1]))][0]
+        friend_list[f - 1]['tag'] = friend_data[3]
+        friend_list[f - 1]['name'] = friend_data[5]
+        friend_list[f - 1]['surname'] = friend_data[6]
+        friend_list[f - 1]['photo'] = friend_data[9]
+        friend_list[f - 1]['university'] = friend_data[11]
 
-        if len(phone) != 0:
-            try:
-                current_user.phone = phone
-                current_user.birthdate = birthdate
-                current_user.city_id = \
-                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-                current_user.university = selected_university
-                db.session.flush()
-                db.session.commit()
+    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
 
-                return redirect(url_for('.user_profile', user_tag=current_user.tag))
 
-            except:
-                db.session.rollback()
-                flash('Неизвестная ошибка', 'error')
+@main.route('/messenger', methods=['GET', 'POST'])
+@login_required
+def messenger():
+    return render_template('messenger.html', title='Kona | Мессенджер')
 
-    return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
-                           universities=universities)
+
+@main.route('/events', methods=['GET', 'POST'])
+@login_required
+def events():
+    return render_template('events.html', title='Kona | Мероприятия')
+
+
+@main.route('/event/<event_id>', methods=['GET', 'POST'])
+@login_required
+def event_page(event_id):
+    return render_template('event_page.html', title='Ивент')
 
 
 @main.route('/logout')
