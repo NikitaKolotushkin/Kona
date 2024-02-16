@@ -14,7 +14,7 @@
         </div>
         <div class="interactive_block">
             {% if current_user.tag != profile_owner['tag'] %}
-            <form action="" class="interactive_form" id="interactive_form" method="POST">
+            <form action="" class="interactive_form" id="interactive_form" name="interactive_form" method="POST">
                 {% if pending_invite %}
                 <input type="submit" value="Принять заявку" name="accept_invite">
                 {% elif sent_invite or accepted_invite or reverse_accepted_invite %}
@@ -30,7 +30,11 @@
         <div class="user_block__interests">
             <h3>Интересы</h3>
             <div class="interests_list">
+                {% if current_user.tag != profile_owner['tag'] %}
+                <button style="display:none;"><img src="../static/img/Squircle.png" alt="" class="interests_list__element"></button>
+                {% else %}
                 <button><img src="../static/img/Squircle.png" alt="" class="interests_list__element"></button>
+                {% endif %}
             </div>
         </div>
         <div class="user_block__friends">

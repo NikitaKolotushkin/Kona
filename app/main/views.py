@@ -145,7 +145,6 @@ def user_profile(user_tag):
     university_exists, city_exists = False, False
     city = None
 
-
     pending_invite = [row for row in engine.connect().execute(
         select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
                                 Relations.status == 'pending'))]
@@ -159,9 +158,9 @@ def user_profile(user_tag):
         select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
                                 Relations.status == 'accepted'))]
 
-
     if request.method == 'POST':
-        if request.form['accept_invite'] == 'Принять заявку':
+        result = list(request.form.keys())[0]
+        if result == 'accept_invite':
             try:
                 operation_id = pending_invite[0][0]
                 relation = Relations.query.get(operation_id)
@@ -169,17 +168,17 @@ def user_profile(user_tag):
                 db.session.commit()
             except:
                 db.session.rollback()
+        elif result == 'add_friend':
+            try:
+                relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                db.session.add(relations)
+                db.session.flush()
+                db.session.commit()
+            except:
+                db.session.rollback()
                 flash('Неизвестная ошибка', 'error')
-        else:
-            if request.form['add_friend'] == 'Добавить в друзья':
-                try:
-                    relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                    db.session.add(relations)
-                    db.session.flush()
-                    db.session.commit()
-                except:
-                    db.session.rollback()
-                    flash('Неизвестная ошибка', 'error')
+        elif result == 'write_message':
+            return redirect(url_for('.messenger'))
 
     profile_owner = {}
 
