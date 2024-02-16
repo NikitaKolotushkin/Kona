@@ -16,5 +16,3 @@ setInterval( function() {
         cursor.style.visibility = 'visible';
     }
 }, 750)
-
-// changeCursorState();
