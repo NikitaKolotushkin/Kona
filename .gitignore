@@ -8,4 +8,6 @@ migrations/
 venv/
 
 dev.db
+dev.db-journal
 test.db
+

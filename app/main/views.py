@@ -160,14 +160,16 @@ def user_profile(user_tag):
 
     if request.method == 'POST':
         result = list(request.form.keys())[0]
-        if result == 'accept_invite':
-            try:
-                operation_id = pending_invite[0][0]
-                relation = Relations.query.get(operation_id)
-                relation.status = 'accepted'
-                db.session.commit()
-            except:
-                db.session.rollback()
+        if pending_invite:
+            if result == 'accept_invite':
+                try:
+                    operation_id = pending_invite[0][0]
+                    relation = Relations.query.get(operation_id)
+                    relation.status = 'accepted'
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+
         elif result == 'add_friend':
             try:
                 relations = Relations(user_id=current_user.tag, friend_id=user_tag)
@@ -203,7 +205,7 @@ def user_profile(user_tag):
 @login_required
 def friends():
     query = [row for row in engine.connect().execute(
-        select(Relations).where(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag),
+        select(Relations).where(or_(Relations.user_id == current_user.tag, Relations.friend_id == current_user.tag),
                                 Relations.status == 'accepted'))]
 
     friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
