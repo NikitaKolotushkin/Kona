@@ -7,7 +7,7 @@ import random
 
 from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
@@ -136,10 +136,14 @@ def questionnaire():
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_tag):
-    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
+    user_data = [row for row in engine.connect().execute(select(User).where(user_tag == User.tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
     university_exists, city_exists = False, False
     city = None
+
+    query = [row for row in engine.connect().execute(
+        select(Relations).where(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag), Relations.status == 'accepted'))]
+    friend_count = len(query)
 
     pending_invite = [row for row in engine.connect().execute(
         select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
@@ -192,14 +196,14 @@ def user_profile(user_tag):
                            city=city, city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
                            reverse_accepted_invite=reverse_accepted_invite,
-                           profile_owner=profile_owner, friend_count=3)
+                           profile_owner=profile_owner, friend_count=friend_count)
 
 
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
     query = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+        select(Relations).where(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag),
                                 Relations.status == 'accepted'))]
 
     friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
