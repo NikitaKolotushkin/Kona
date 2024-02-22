@@ -52,8 +52,8 @@ def login():
 @main.route('/registration', methods=['POST', 'GET'])
 def registration():
     if request.method == 'POST':
-        user_name = request.form['user_name']
-        user_surname = request.form['user_surname']
+        user_name = request.form['user_name'].capitalize()
+        user_surname = request.form['user_surname'].capitalize()
         user_login = request.form['user_login']
         user_email = request.form['email']
         user_password = request.form['password']
