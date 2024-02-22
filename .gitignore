@@ -9,4 +9,6 @@ venv/
 
 *.db-journal
 dev.db
+dev.db-journal
 test.db
+
