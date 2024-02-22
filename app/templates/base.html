@@ -20,12 +20,14 @@
                 <img src="../static/img/logo_light.png" alt="">
                 Кона
             </a>
+            {% if current_user.is_authenticated %}
             <div class="nav_search">
                 <input type="text" placeholder="Найти что-нибудь интересное...">
                 <button><img class="star" src="../static/img/star.svg" alt=""></button>
                 <button><img class="bell" src="../static/img/bell.svg" alt=""></button>
                 <!-- <a href="">Найти!</a> -->
             </div>
+            {% endif %}
             
             {% if current_user.is_authenticated %}
             <div class="user_profile">
@@ -47,6 +49,10 @@
     </nav>
     
     {% block content %}{% endblock %}
+
+    <footer>
+        <div class="container"></div>
+    </footer>
 
 </body>
 
