@@ -7,5 +7,8 @@ __pycache__/
 migrations/
 venv/
 
+*.db-journal
 dev.db
+dev.db-journal
 test.db
+

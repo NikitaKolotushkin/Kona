@@ -7,7 +7,7 @@ import random
 
 from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, or_, and_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
@@ -52,8 +52,8 @@ def login():
 @main.route('/registration', methods=['POST', 'GET'])
 def registration():
     if request.method == 'POST':
-        user_name = request.form['user_name']
-        user_surname = request.form['user_surname']
+        user_name = request.form['user_name'].capitalize()
+        user_surname = request.form['user_surname'].capitalize()
         user_login = request.form['user_login']
         user_email = request.form['email']
         user_password = request.form['password']
@@ -136,35 +136,42 @@ def questionnaire():
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_tag):
-    user_data = [row for row in engine.connect().execute(select(User).where(User.tag == user_tag))][0]
+    user_data = [row for row in engine.connect().execute(select(User).where(user_tag == User.tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
     university_exists, city_exists = False, False
     city = None
 
+    query = [row for row in engine.connect().execute(
+        select(Relations).where(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag),
+                                Relations.status == 'accepted'))]
+    friend_count = len(query)
+
     pending_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
-                                Relations.status == 'pending'))]
+        select(Relations).where(and_(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                     Relations.status == 'pending')))]
     sent_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
-                                Relations.status == 'pending'))]
+        select(Relations).where(and_(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
+                                     Relations.status == 'pending')))]
     accepted_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.tag, Relations.friend_id == user_tag,
-                                Relations.status == 'accepted'))]
-    reverse_accepted_invite = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
-                                Relations.status == 'accepted'))]
+        select(Relations).where(
+            or_((Relations.user_id == current_user.tag) & (Relations.friend_id == user_tag),
+                (Relations.user_id == user_tag) &
+                (Relations.friend_id == current_user.tag)),
+            Relations.status == 'accepted'))]
 
     if request.method == 'POST':
         result = list(request.form.keys())[0]
-        if result == 'accept_invite':
-            try:
-                operation_id = pending_invite[0][0]
-                relation = Relations.query.get(operation_id)
-                relation.status = 'accepted'
-                db.session.commit()
-            except:
-                db.session.rollback()
-        elif result == 'add_friend':
+        if pending_invite:
+            if result == 'accept_invite':
+                try:
+                    operation_id = pending_invite[0][0]
+                    relation = Relations.query.get(operation_id)
+                    relation.status = 'accepted'
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+
+        elif result == 'add_friend' and not sent_invite:
             try:
                 relations = Relations(user_id=current_user.tag, friend_id=user_tag)
                 db.session.add(relations)
@@ -191,15 +198,14 @@ def user_profile(user_tag):
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
-                           reverse_accepted_invite=reverse_accepted_invite,
-                           profile_owner=profile_owner, friend_count=3)
+                           profile_owner=profile_owner, friend_count=friend_count)
 
 
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
     query = [row for row in engine.connect().execute(
-        select(Relations).where(Relations.user_id == current_user.id or Relations.friend_id == current_user.tag,
+        select(Relations).where(or_(Relations.user_id == current_user.tag, Relations.friend_id == current_user.tag),
                                 Relations.status == 'accepted'))]
 
     friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]

@@ -17,7 +17,7 @@
             <form action="" class="interactive_form" id="interactive_form" name="interactive_form" method="POST">
                 {% if pending_invite %}
                 <input type="submit" value="Принять заявку" name="accept_invite">
-                {% elif sent_invite or accepted_invite or reverse_accepted_invite %}
+                {% elif sent_invite or accepted_invite %}
                 <input type="submit" value="Добавить в друзья" name="add_friend" style="display: none;">
                 {% else %}
                 <input type="submit" value="Добавить в друзья" name="add_friend">
@@ -39,9 +39,10 @@
         </div>
         <div class="user_block__friends">
             <h3>Друзья <span>({{ friend_count }})</span></h3>
+            {% if friend_count > 0 %}
             <div class="friends_list">
-
             </div>
+            {% endif %}
         </div>
         <div class="user_block__visited">
             <h3>Посещено</h3>
