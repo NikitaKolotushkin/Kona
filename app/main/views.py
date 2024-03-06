@@ -208,7 +208,7 @@ def friends():
         select(Relations).where(or_(Relations.user_id == current_user.tag, Relations.friend_id == current_user.tag),
                                 Relations.status == 'accepted'))]
 
-    friend_tags = [f[1] if f[1] != current_user.id else f[2] for f in query]
+    friend_tags = [f[1] if f[1] != current_user.tag else f[2] for f in query]
     friend_list = [{} for _ in range(len(query))]
 
     for f in range(len(friend_tags)):
