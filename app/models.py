@@ -83,14 +83,15 @@ class Relations(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
     user_id = db.Column(db.Integer(), nullable=False)
     friend_id = db.Column(db.Integer(), nullable=False)
-    status = db.Column(db.String(50), default='pending')
+    status = db.Column(db.String(10), default='pending')
 
-class Message(db.Model):
+class Messages(db.Model):
     __tablename__ = 'messages'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
-    sender_id = db.Column(db.String(10000), nullable=False)
-    receiver_id = db.Column(db.String(10000), nullable=False)
+    sender_id = db.Column(db.String(10), nullable=False)
+    receiver_id = db.Column(db.String(10), nullable=False)
+    data = db.Column(db.String(10000), nullable=False)
     status = db.Column(db.String(10), nullable=False, default='sent')
 
 @login_manager.user_loader
