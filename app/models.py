@@ -85,6 +85,13 @@ class Relations(db.Model):
     friend_id = db.Column(db.Integer(), nullable=False)
     status = db.Column(db.String(50), default='pending')
 
+class Message(db.Model):
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
+    sender_id = db.Column(db.String(10000), nullable=False)
+    receiver_id = db.Column(db.String(10000), nullable=False)
+    status = db.Column(db.String(10), nullable=False, default='sent')
 
 @login_manager.user_loader
 def load_user(user_id):
