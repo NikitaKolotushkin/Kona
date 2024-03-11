@@ -4,6 +4,7 @@
 import codecs
 import json
 import random
+from datetime import datetime
 
 from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
@@ -226,31 +227,34 @@ def friends():
 @main.route('/messenger', methods=['GET', 'POST'])
 @login_required
 def messenger():
-    query = select(Messages).options(
-        load_only(Messages.sender_id, Messages.receiver_id)).where(
-        or_(
-            Messages.sender_id == current_user.tag,
-            Messages.receiver_id == current_user.tag
-        ))
-    result = [row for row in engine.connect().execute(query)]
-    print(result)
+    try:
+        query = select(Messages).options(
+            load_only(Messages.sender_id, Messages.receiver_id)).where(or_(Messages.sender_id == current_user.tag,
+                                                                           Messages.receiver_id == current_user.tag))
+    except:
+        query = 0
+    if query != 0:
+        result = [row for row in engine.connect().execute(query)]
+        print(result)
 
-    unique_tags = {tag for sublist in result for tag in sublist[1:3] if tag != current_user.tag}
-    dialogues = list(unique_tags)
-    dialogue_list = [{} for _ in dialogues]
+        unique_tags = {tag for sublist in result for tag in sublist[1:3] if tag != current_user.tag}
+        dialogues = list(unique_tags)
+        dialogue_list = [{} for _ in dialogues]
 
-
-    for i in range(len(dialogues)):
-        chat_data = [row for row in engine.connect().execute(select(User).where(User.tag == dialogues[i - 1]))][0]
-        last_message = engine.connect().execute(select(Messages).order_by(Messages.id.desc()).where(
-            or_(Messages.sender_id == dialogues[i - 1], Messages.receiver_id == dialogues[i - 1]))).first()[3]
-        print(last_message)
-        dialogue_list[i - 1]['tag'] = chat_data[3]
-        dialogue_list[i - 1]['name'] = chat_data[5]
-        dialogue_list[i - 1]['surname'] = chat_data[6]
-        dialogue_list[i - 1]['photo'] = chat_data[9]
-        dialogue_list[i - 1]['last_message'] = last_message
-        print(dialogue_list)
+        for i in range(len(dialogues)):
+            chat_data = [row for row in engine.connect().execute(select(User).where(User.tag == dialogues[i - 1]))][0]
+            query = engine.connect().execute(select(Messages).order_by(Messages.id.desc()).where(
+                or_(Messages.sender_id == dialogues[i - 1], Messages.receiver_id == dialogues[i - 1]))).first()
+            last_message = query[3]
+            time = query[4]
+            print(last_message)
+            dialogue_list[i - 1]['tag'] = chat_data[3]
+            dialogue_list[i - 1]['name'] = chat_data[5]
+            dialogue_list[i - 1]['surname'] = chat_data[6]
+            dialogue_list[i - 1]['photo'] = chat_data[9]
+            dialogue_list[i - 1]['last_message'] = last_message
+            dialogue_list[i - 1]['time'] = time
+            print(dialogue_list)
 
     return render_template('messenger.html', title='Kona | Мессенджер', dialogue_list=dialogue_list)
 

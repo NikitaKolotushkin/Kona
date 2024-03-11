@@ -92,6 +92,7 @@ class Messages(db.Model):
     sender_id = db.Column(db.String(10), nullable=False)
     receiver_id = db.Column(db.String(10), nullable=False)
     data = db.Column(db.String(10000), nullable=False)
+    date = db.Column(db.DateTime(), nullable=False)
     status = db.Column(db.String(10), nullable=False, default='sent')
 
 @login_manager.user_loader
