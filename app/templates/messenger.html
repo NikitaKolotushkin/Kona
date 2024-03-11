@@ -2,6 +2,19 @@
 
 {% block index_content %}
 
-<h1>Мессенджер</h1>
+<div class="message_content">
+    {% for dialogue in dialogue_list %}
+        <div class="message_content__message">
+            <img src="..//static/img/avatar_cap.png">
+            <div class="message_info">
+                <a>{{ dialogue['name'] }} {{ dialogue['surname'] }}</a>
+                <a>{{ dialogue['last_message'] }}</a>
+            </div>
+        </div>
+        {% if dialogue != dialogue_list[-1] %}
+            <div class="line"></div>
+        {% endif %}
+    {% endfor %}
+</div>
 
 {% endblock %}

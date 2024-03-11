@@ -8,10 +8,11 @@ import random
 from flask import flash, render_template, redirect, request, url_for, session
 from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.sql import select, or_, and_
+from sqlalchemy.orm import load_only
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, City, Relations
+from app.models import User, City, Relations, Messages
 from app.tools import validate_email
 from . import main
 
@@ -225,7 +226,33 @@ def friends():
 @main.route('/messenger', methods=['GET', 'POST'])
 @login_required
 def messenger():
-    return render_template('messenger.html', title='Kona | Мессенджер')
+    query = select(Messages).options(
+        load_only(Messages.sender_id, Messages.receiver_id)).where(
+        or_(
+            Messages.sender_id == current_user.tag,
+            Messages.receiver_id == current_user.tag
+        ))
+    result = [row for row in engine.connect().execute(query)]
+    print(result)
+
+    unique_tags = {tag for sublist in result for tag in sublist[1:3] if tag != current_user.tag}
+    dialogues = list(unique_tags)
+    dialogue_list = [{} for _ in dialogues]
+
+
+    for i in range(len(dialogues)):
+        chat_data = [row for row in engine.connect().execute(select(User).where(User.tag == dialogues[i - 1]))][0]
+        last_message = engine.connect().execute(select(Messages).order_by(Messages.id.desc()).where(
+            or_(Messages.sender_id == dialogues[i - 1], Messages.receiver_id == dialogues[i - 1]))).first()[3]
+        print(last_message)
+        dialogue_list[i - 1]['tag'] = chat_data[3]
+        dialogue_list[i - 1]['name'] = chat_data[5]
+        dialogue_list[i - 1]['surname'] = chat_data[6]
+        dialogue_list[i - 1]['photo'] = chat_data[9]
+        dialogue_list[i - 1]['last_message'] = last_message
+        print(dialogue_list)
+
+    return render_template('messenger.html', title='Kona | Мессенджер', dialogue_list=dialogue_list)
 
 
 @main.route('/message/<user_tag>', methods=['GET', 'POST'])
