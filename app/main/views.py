@@ -13,7 +13,7 @@ from sqlalchemy.orm import load_only
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
-from app.models import User, City, Relations, Messages
+from app.models import *
 from app.tools import validate_email
 from . import main
 
