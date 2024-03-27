@@ -52,6 +52,12 @@
         var city_selector = document.querySelector("#city");
         var university_selector = document.querySelector("#university");
 
+
+          document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date().toISOString().split('T')[0];
+        document.querySelector('.birthdate').setAttribute('max', today);
+
+    });
         city_selector.addEventListener('change', function (e) {
             console.log("Город: " + e.target.value);
             console.log("Универ: " + university_selector.value);
