@@ -17,7 +17,7 @@
                 <div class="form_block">
                     <form action="" class="questionnaire_form" id="questionnaire_form" method="POST">
                         <input type="text" name="phone" class="phone" placeholder="Телефон">
-                        <input type="date" name="birthdate" class="birthdate" placeholder="Дата рождения">
+                        <input type="date" id ="citySelect" name="birthdate" class="birthdate" placeholder="Дата рождения">
                         <select id="city" name="city" form="questionnaire_form">
                             <option value="" disabled selected>Ваш город</option>
                            
@@ -47,10 +47,39 @@
     {{ data }}
 
     <script>
+        const cities_data = cities
         $(".phone").mask("+7(999)999-99-99");
 
         var city_selector = document.querySelector("#city");
         var university_selector = document.querySelector("#university");
+
+        function filterData(input) {
+            return cities_data.filter(item => item.toLowerCase().startsWith(input.toLowerCase()));
+
+        function displaySuggestions(suggestions) {
+    suggestionsList.innerHTML = '';
+    suggestions.forEach(suggestion => {
+        const li = document.createElement('li');
+        li.textContent = suggestion;
+        suggestionsList.appendChild(li);
+    });
+}
+
+        searchInput.addEventListener('keyup', (event) => {
+            const input = event.target.value;
+            const suggestions = filterData(input);
+            displaySuggestions(suggestions);
+        });
+
+            searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown') {
+
+        } else if (event.key === 'ArrowUp') {
+
+        } else if (event.key === 'Enter') {
+
+        }
+    });
 
         city_selector.addEventListener('change', function (e) {
             console.log("Город: " + e.target.value);
