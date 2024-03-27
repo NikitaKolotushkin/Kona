@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, engine
 from app.models import *
-from app.tools import validate_email
+from app.tools import *
 from . import main
 
 
@@ -28,6 +28,7 @@ def index():
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    print(open_relations())
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -79,6 +80,10 @@ def registration():
                 user = User(login=user_login, email=user_email,
                             password_hash=generate_password_hash(user_password), name=user_name,
                             surname=user_surname, tag=user_tag)
+
+                dict_relations = open_relations()
+                dict_relations.update({user_tag: []})
+                dump_relations(dict_relations)
 
                 db.session.add(user)
                 db.session.flush()
@@ -170,6 +175,11 @@ def user_profile(user_tag):
                     relation = Relations.query.get(operation_id)
                     relation.status = 'accepted'
                     db.session.commit()
+
+                    dict_relations = open_relations()
+                    dict_relations[current_user.tag].append(user_tag)
+                    dict_relations[user_tag].append(current_user.tag)
+                    dump_relations(dict_relations)
                 except:
                     db.session.rollback()
 
