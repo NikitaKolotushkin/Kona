@@ -23,24 +23,13 @@ class User(db.Model, UserMixin):
     description = db.Column(db.Text(2048))
     photo = db.Column(db.LargeBinary(8000))
     city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
-    university = db.Column(db.String(255))
+    university_id = db.Column(db.Integer(), db.ForeignKey('universities.id'))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-    def __repr__(self):
-        return f'<{self.id}:{self.name}>'
-
-
-class University(db.Model):
-    __tablename__ = 'universities'
-
-    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    name = db.Column(db.String(255), nullable=True, unique=True)
-    city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
@@ -53,6 +42,18 @@ class City(db.Model):
     name = db.Column(db.String(128), nullable=False, unique=True)
     users = relationship("User", backref=db.backref('city'), lazy='dynamic')
     universities = relationship("University", backref=db.backref('city'), lazy='dynamic')
+
+    def __repr__(self):
+        return f'<{self.id}:{self.name}>'
+
+
+class University(db.Model):
+    __tablename__ = 'universities'
+
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=True, unique=True)
+    city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
+    users = relationship("User", backref=db.backref('university'), lazy='dynamic')
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
