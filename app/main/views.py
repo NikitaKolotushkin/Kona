@@ -145,7 +145,15 @@ def questionnaire():
 def user_profile(user_tag):
     user_data = [row for row in engine.connect().execute(select(User).where(user_tag == User.tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
-    university_exists, city_exists = False, False
+    if user_data[12] is not None:
+        university_exists = True
+    else:
+        university_exists = False
+    if user_data[11] is not None:
+        city_exists = True
+    else:
+        city_exists = False
+
     city = None
 
     query = [row for row in engine.connect().execute(
@@ -194,18 +202,17 @@ def user_profile(user_tag):
                 flash('Неизвестная ошибка', 'error')
         elif result == 'write_message':
             return redirect(url_for('.messenger'))
+        elif result == 'make_graph':
+            graph = open_relations()
+            print(graph_maker(graph, current_user.tag, user_tag))
 
     profile_owner = {}
 
     for i in range(len(user_data)):
         profile_owner[table_keys[i]] = user_data[i]
 
-    if profile_owner['university']:
-        university_exists = True
-
-    if profile_owner['city_id']:
+    if city_exists:
         city = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
-        city_exists = city is not None if city else False
 
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city=city, city_exists=city_exists, university_exists=university_exists,

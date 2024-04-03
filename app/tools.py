@@ -4,6 +4,28 @@
 import re
 import codecs
 import json
+import heapq
+
+def graph_maker(graph, start, end):
+    queue = [(0, start, [])]
+    visited = set()
+    shortest_paths = {start: (0, [])}
+    while queue:
+        (cost, node, path) = heapq.heappop(queue)
+        if node not in visited:
+            visited.add(node)
+            path = path + [node]
+            if node == end:
+                return cost, path
+            for next_node in graph[node]:
+                if next_node not in visited:
+                    heapq.heappush(queue, (cost + 1, next_node, path))
+                    if next_node not in shortest_paths or cost + 1 < shortest_paths[next_node][0]:
+                        shortest_paths[next_node] = (cost + 1, path + [next_node])
+
+    return shortest_paths[end]
+
+
 
 
 def validate_email(email) -> bool:
