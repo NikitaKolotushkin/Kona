@@ -108,15 +108,12 @@ def registration():
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
-    with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
-        data = json.loads(f.read())
-
     cities = [row[1] for row in engine.connect().execute(select(City))]
-    universities = sum([u for u in data.values() if len(u[0]) != 0], [])
+    universities = [row[1] for row in engine.connect().execute(select(University))]
 
     if request.method == 'POST':
         phone = request.form.get("phone")
-        birthdate = request.form.get("birthdate")
+        birthdate = datetime.strptime(request.form.get("birthdate"), '%Y-%m-%d') 
         selected_city = request.form.get("city")
         selected_university = request.form.get("university")
 
@@ -124,9 +121,9 @@ def questionnaire():
             try:
                 current_user.phone = phone
                 current_user.birthdate = birthdate
-                current_user.city_id = \
-                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-                current_user.university = selected_university
+                current_user.city_id = [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university_id = [row for row in engine.connect().execute(select(University.id).where(University.name == selected_university))][0][0]
+                print(current_user.birthdate)
                 db.session.flush()
                 db.session.commit()
 
@@ -145,14 +142,9 @@ def questionnaire():
 def user_profile(user_tag):
     user_data = [row for row in engine.connect().execute(select(User).where(user_tag == User.tag))][0]
     table_keys = [key for key in engine.connect().execute(select(User)).keys()]
-    if user_data[12] is not None:
-        university_exists = True
-    else:
-        university_exists = False
-    if user_data[11] is not None:
-        city_exists = True
-    else:
-        city_exists = False
+
+    city_exists = user_data[11] is not None
+    university_exists = user_data[12] is not None
 
     city = None
 
