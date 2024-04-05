@@ -8,7 +8,7 @@
             <div class="user_block__user_data">
                 <h2>{{profile_owner['name']}} {{profile_owner['surname']}}</h2>
                 {% if city_exists and university_exists %}
-                <h4>{{city}}, {{profile_owner['university_id']}}</h4>
+                <h4>{{profile_owner['city']}}, {{profile_owner['university']}}</h4>
                 {% endif %}
             </div>
         </div>
@@ -31,9 +31,7 @@
         <div class="user_block__interests">
             <h3>Интересы</h3>
             <div class="interests_list">
-                {% if current_user.tag != profile_owner['tag'] %}
-                <button style="display:none;"><img src="../static/img/Squircle.png" alt="" class="interests_list__element"></button>
-                {% else %}
+                {% if current_user.tag == profile_owner['tag'] %}
                 <button><img src="../static/img/Squircle.png" alt="" class="interests_list__element"></button>
                 {% endif %}
             </div>
