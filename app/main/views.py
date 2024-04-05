@@ -28,7 +28,6 @@ def index():
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    print(open_relations())
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -113,7 +112,7 @@ def questionnaire():
 
     if request.method == 'POST':
         phone = request.form.get("phone")
-        birthdate = datetime.strptime(request.form.get("birthdate"), '%Y-%m-%d') 
+        birthdate = datetime.strptime(request.form.get("birthdate"), '%Y-%m-%d')
         selected_city = request.form.get("city")
         selected_university = request.form.get("university")
 
@@ -121,9 +120,10 @@ def questionnaire():
             try:
                 current_user.phone = phone
                 current_user.birthdate = birthdate
-                current_user.city_id = [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-                current_user.university_id = [row for row in engine.connect().execute(select(University.id).where(University.name == selected_university))][0][0]
-                print(current_user.birthdate)
+                current_user.city_id = \
+                    [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+                current_user.university_id = [row for row in engine.connect().execute(
+                    select(University.id).where(University.name == selected_university))][0][0]
                 db.session.flush()
                 db.session.commit()
 
@@ -205,12 +205,15 @@ def user_profile(user_tag):
         profile_owner[table_keys[i]] = user_data[i]
 
     if city_exists:
-        profile_owner['city'] = [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
+        profile_owner['city'] = \
+            [x for x in engine.connect().execute(select(City).where(City.id == profile_owner['city_id']))][0][1]
 
     if university_exists:
-        profile_owner['university'] = [row for row in engine.connect().execute(select(University.name).where(University.id == profile_owner['university_id']))][0][0]
+        profile_owner['university'] = [row for row in engine.connect().execute(
+            select(University.name).where(University.id == profile_owner['university_id']))][0][0]
 
-    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', city_exists=city_exists, university_exists=university_exists,
+    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
+                           city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
                            profile_owner=profile_owner, friend_count=friend_count)
 
@@ -247,7 +250,6 @@ def messenger():
         query = 0
     if query != 0:
         result = [row for row in engine.connect().execute(query)]
-        print(result)
 
         unique_tags = {tag for sublist in result for tag in sublist[1:3] if tag != current_user.tag}
         dialogues = list(unique_tags)
@@ -259,14 +261,13 @@ def messenger():
                 or_(Messages.sender_id == dialogues[i - 1], Messages.receiver_id == dialogues[i - 1]))).first()
             last_message = query[3]
             time = query[4]
-            print(last_message)
+
             dialogue_list[i - 1]['tag'] = chat_data[3]
             dialogue_list[i - 1]['name'] = chat_data[5]
             dialogue_list[i - 1]['surname'] = chat_data[6]
             dialogue_list[i - 1]['photo'] = chat_data[9]
             dialogue_list[i - 1]['last_message'] = last_message
             dialogue_list[i - 1]['time'] = time
-            print(dialogue_list)
 
     return render_template('messenger.html', title='Kona | Мессенджер', dialogue_list=dialogue_list)
 

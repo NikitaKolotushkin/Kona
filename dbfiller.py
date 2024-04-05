@@ -11,34 +11,29 @@ class dbfiller:
         self.connection = sqlite3.connect('app/databases/dev.db')
         self.cursor = self.connection.cursor()
 
-
     def fill_cities(self) -> None:
         with codecs.open('cities.json', 'r', 'utf_8_sig') as f:
             data = [city for city in json.loads(f.read()).keys()]
 
         for city in data:
-            self.cursor.execute('INSERT OR IGNORE INTO cities (name) VALUES (?)', (city, ))
+            self.cursor.execute('INSERT OR IGNORE INTO cities (name) VALUES (?)', (city,))
 
         self.commit_changes()
-
 
     def fill_universities(self) -> None:
         with open('universities.txt', 'r') as f:
             data = [x.rstrip() for x in f.readlines()]
 
         for university in data:
-            self.cursor.execute('INSERT OR IGNORE INTO universities (name) VALUES (?)', (university, ))
+            self.cursor.execute('INSERT OR IGNORE INTO universities (name) VALUES (?)', (university,))
 
         self.commit_changes()
 
-
     def fill_interests(self) -> None:
         return
-    
 
     def commit_changes(self) -> None:
         self.connection.commit()
-
 
     def close_connection(self) -> None:
         self.connection.close()
