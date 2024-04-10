@@ -120,15 +120,10 @@ def questionnaire():
             try:
                 current_user.phone = phone
                 current_user.birthdate = birthdate
-<<<<<<< Updated upstream
                 current_user.city_id = \
                     [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
                 current_user.university_id = [row for row in engine.connect().execute(
                     select(University.id).where(University.name == selected_university))][0][0]
-=======
-                current_user.city_id = [row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-                current_user.university_id = [row for row in engine.connect().execute(select(University.id).where(University.name == selected_university))][0][0]
->>>>>>> Stashed changes
                 db.session.flush()
                 db.session.commit()
 
@@ -216,13 +211,9 @@ def user_profile(user_tag):
         profile_owner['university'] = [row for row in engine.connect().execute(
             select(University.name).where(University.id == profile_owner['university_id']))][0][0]
 
-<<<<<<< Updated upstream
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
-=======
-    return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}', pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
->>>>>>> Stashed changes
                            profile_owner=profile_owner, friend_count=friend_count)
 
 
@@ -269,10 +260,6 @@ def messenger():
                 or_(Messages.sender_id == dialogues[i - 1], Messages.receiver_id == dialogues[i - 1]))).first()
             last_message = query[3]
             time = query[4]
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
             dialogue_list[i - 1]['tag'] = chat_data[3]
             dialogue_list[i - 1]['name'] = chat_data[5]
             dialogue_list[i - 1]['surname'] = chat_data[6]
