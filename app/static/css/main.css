@@ -377,6 +377,8 @@ input.form__button:hover {
 
 .profile_content {
     width: 56%;
+    height: 92vh;
+    overflow: auto;
 }
 
 .user_block {
@@ -445,11 +447,23 @@ input.form__button:hover {
     color: #595959;
 }
 
-/* .friends_list {
+.friends_list {
     height: 10vh;
     width: 100%;
     display: flex;
-} */
+    border: 2px solid red;
+}
+
+.friends_list a {
+    display: block;
+    height: 100%;
+    width: 40%;
+    border: 2px solid blue;
+}
+
+.friends_list__item {
+    
+}
 
 .visited__notifications {
     width: 100%;

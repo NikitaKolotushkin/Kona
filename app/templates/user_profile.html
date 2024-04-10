@@ -7,7 +7,7 @@
             <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
             <div class="user_block__user_data">
                 <h2>{{profile_owner['name']}} {{profile_owner['surname']}}</h2>
-                {% if city_exists and university_exists %}
+                {% if profile_owner['city_exists'] and profile_owner['university_exists'] %}
                 <h4>{{profile_owner['city']}}, {{profile_owner['university']}}</h4>
                 {% endif %}
             </div>
@@ -36,13 +36,20 @@
                 {% endif %}
             </div>
         </div>
-        <div class="user_block__friends">
-            <h3>Друзья <span>({{ friend_count }})</span></h3>
-            {% if friend_count > 0 %}
-            <div class="friends_list">
+        {% if friend_count > 0 %}
+            <div class="user_block__friends">
+                <h3>Друзья <span>({{ friend_count }})</span></h3>
+                <div class="friends_list">
+                    {% for x in range(friend_count) %}
+                        <a href="#">
+                            <div class="friends_list__item">
+
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
         <div class="user_block__visited">
             <h3>Посещено</h3>
             <div class="visited__notifications">
