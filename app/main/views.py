@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import codecs
-import json
 import random
 from datetime import datetime
 
-from flask import flash, render_template, redirect, request, url_for, session
+from flask import flash, render_template, redirect, request, url_for, session, jsonify
 from flask_login import login_required, login_user, current_user, logout_user
-from sqlalchemy.sql import select, or_, and_
 from sqlalchemy.orm import load_only
-from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import select, or_, and_
 
-from app import db, engine
+from app import engine
 from app.models import *
 from app.tools import *
 from . import main
@@ -164,40 +161,46 @@ def user_profile(user_tag):
                 (Relations.friend_id == current_user.tag)),
             Relations.status == 'accepted'))]
 
-    if request.method == 'POST':
-        result = list(request.form.keys())[0]
-        if pending_invite:
-            if result == 'accept_invite':
-                try:
-                    operation_id = pending_invite[0][0]
-                    relation = Relations.query.get(operation_id)
-                    relation.status = 'accepted'
-                    db.session.commit()
+    value = request.form.get('button_text')
 
-                    dict_relations = open_relations()
-                    dict_relations[current_user.tag].append(user_tag)
-                    dict_relations[user_tag].append(current_user.tag)
-                    dump_relations(dict_relations)
-                except:
-                    db.session.rollback()
+    if value == 'accept_invite':
+        try:
+            operation_id = pending_invite[0][0]
+            relation = Relations.query.get(operation_id)
+            relation.status = 'accepted'
+            db.session.commit()
 
-        elif result == 'add_friend' and not sent_invite:
-            try:
-                relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                db.session.add(relations)
-                db.session.flush()
-                db.session.commit()
-            except:
-                db.session.rollback()
-                flash('Неизвестная ошибка', 'error')
-        elif result == 'write_message':
-            return redirect(url_for('.messenger'))
-        elif result == 'make_graph':
-            graph = open_relations()
-            print(graph_maker(graph, current_user.tag, user_tag))
+            dict_relations = open_relations()
+            dict_relations[current_user.tag].append(user_tag)
+            dict_relations[user_tag].append(current_user.tag)
+            dump_relations(dict_relations)
+            data = {'message': 'Заявка принята'}
+            print(value)
+            return jsonify(data)
+        except:
+            db.session.rollback()
+
+    # if request.method == 'POST':
+    #     result = list(request.form.keys())[0]
+    #     if pending_invite:
+    #         if result == 'accept_invite':
+    #     elif result == 'add_friend' and not sent_invite:
+    #         try:
+    #             relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+    #             db.session.add(relations)
+    #             db.session.flush()
+    #             db.session.commit()
+    #         except:
+    #             db.session.rollback()
+    #             flash('Неизвестная ошибка', 'error')
+    #     elif result == 'write_message':
+    #         return redirect(url_for('.messenger'))
+    #     elif result == 'make_graph':
+    #         graph = open_relations()
+    #         print(graph_maker(graph, current_user.tag, user_tag))
 
     profile_owner = {}
-    profile_owner['city_exists'] = city_exists 
+    profile_owner['city_exists'] = city_exists
     profile_owner['university_exists'] = university_exists
 
     for i in range(len(user_data)):

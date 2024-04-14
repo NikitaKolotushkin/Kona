@@ -2,6 +2,7 @@
 
 {% block index_content %}
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <div class="profile_content">
         <div class="user_block">
             <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
@@ -16,11 +17,11 @@
             {% if current_user.tag != profile_owner['tag'] %}
             <form action="" class="interactive_form" id="interactive_form" name="interactive_form" method="POST">
                 {% if pending_invite %}
-                <input type="submit" value="Принять заявку" name="accept_invite">
+                <input type="submit" value="Принять заявку" name="accept_invite" id="accept_friend">
                 {% elif sent_invite or accepted_invite %}
                 <input type="submit" value="Добавить в друзья" name="add_friend" style="display: none;">
                 {% else %}
-                <input type="submit" value="Добавить в друзья" name="add_friend">
+                <input type="submit" value="Добавить в друзья" name="add_friend" class="add_friend">
                 {% endif %}
                 <input type="submit" value="Написать сообщение" name="write_message">
                 <input type="submit" value="Построить граф друзей" name="make_graph">
@@ -71,5 +72,31 @@
 
         <a href="{{ url_for('.logout') }}">Выход</a>
     </div>
+
+
+<script>
+    $(document).ready(function(){
+        document.getElementById('accept_friend').addEventListener('click', function(event) {
+            event.preventDefault();
+            var profileTag = "{{ profile_owner['tag'] }}";
+            var buttonValue = event.target.name;
+            $.ajax({
+                url: '/user/' + profileTag,
+                type: 'post',
+                data: {
+                    button_text: buttonValue
+                },
+                success: function(response){
+                    var message = response.message
+                    document.getElementById('accept_friend').value = message
+                    console.log(message)
+                },
+                error: function(error){
+                    console.log(error)
+                }
+            })
+        })
+    });
+</script>
 
 {% endblock %}
