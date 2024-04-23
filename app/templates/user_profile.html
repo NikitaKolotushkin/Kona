@@ -2,7 +2,7 @@
 
 {% block index_content %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <div class="profile_content">
         <div class="user_block">
             <img src="../static/img/avatar_cap.png" alt="" class="user_block__avatar">
@@ -21,7 +21,7 @@
                 {% elif sent_invite or accepted_invite %}
                 <input type="submit" value="Добавить в друзья" name="add_friend" style="display: none;">
                 {% else %}
-                <input type="submit" value="Добавить в друзья" name="add_friend" class="add_friend">
+                <input type="submit" value="Добавить в друзья" name="add_friend" id="add_friend">
                 {% endif %}
                 <input type="submit" value="Написать сообщение" name="write_message">
                 <input type="submit" value="Построить граф друзей" name="make_graph">
@@ -74,11 +74,13 @@
     </div>
 
 
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
     $(document).ready(function(){
-        document.getElementById('accept_friend').addEventListener('click', function(event) {
+        var profileTag = "{{ profile_owner['tag'] }}";
+        document.getElementById('interactive_form').addEventListener('click', function(event) {
             event.preventDefault();
-            var profileTag = "{{ profile_owner['tag'] }}";
             var buttonValue = event.target.name;
             $.ajax({
                 url: '/user/' + profileTag,

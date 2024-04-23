@@ -171,12 +171,22 @@ def user_profile(user_tag):
             db.session.commit()
 
             dict_relations = open_relations()
-            dict_relations[current_user.tag].append(user_tag)
-            dict_relations[user_tag].append(current_user.tag)
+            if user_tag not in dict_relations[current_user.tag]:
+                dict_relations[current_user.tag].append(user_tag)
+            if current_user.tag not in dict_relations[user_tag]:
+                dict_relations[user_tag].append(current_user.tag)
             dump_relations(dict_relations)
             data = {'message': 'Заявка принята'}
             print(value)
             return jsonify(data)
+        except:
+            db.session.rollback()
+    if value == 'add_friend':
+        try:
+            relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+            db.session.add(relations)
+            db.session.flush()
+            db.session.commit()
         except:
             db.session.rollback()
 

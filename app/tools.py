@@ -5,6 +5,8 @@ import re
 import codecs
 import json
 import heapq
+from pyisemail import is_email
+
 
 def graph_maker(graph, start, end):
     queue = [(0, start, [])]
@@ -26,8 +28,6 @@ def graph_maker(graph, start, end):
     return shortest_paths[end]
 
 
-
-
 def validate_email(email) -> bool:
     """ Проверяет валидность электронной почте по заданному регулярным выражением шаблону
     
@@ -35,9 +35,9 @@ def validate_email(email) -> bool:
     :return: True если email прошел валидацию, иначе - False
     """
     pattern = '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+    bool_result_with_dns = is_email(email, check_dns=True)
 
-    return bool(re.match(pattern, email))
-
+    return bool(re.match(pattern, email)) and bool_result_with_dns
 
 def open_relations():
     with codecs.open('relations.json', 'r', 'utf_8_sig') as f:
