@@ -143,6 +143,57 @@ def user_profile(user_tag):
     city_exists = user_data[11] is not None
     university_exists = user_data[12] is not None
 
+    button_name = request.form.get('button_name')
+    button_value = request.form.get('button_value')
+
+    if button_name == 'accept_invite':
+        if button_value == 'Принять заявку':
+            try:
+                pending_invite = [row for row in engine.connect().execute(
+                    select(Relations).where(and_(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                                 Relations.status == 'pending')))]
+                operation_id = pending_invite[0][0]
+                relation = Relations.query.get(operation_id)
+                relation.status = 'accepted'
+                db.session.commit()
+
+                dict_relations = open_relations()
+                if user_tag not in dict_relations[current_user.tag]:
+                    dict_relations[current_user.tag].append(user_tag)
+                if current_user.tag not in dict_relations[user_tag]:
+                    dict_relations[user_tag].append(current_user.tag)
+                dump_relations(dict_relations)
+                data = {'message': 'Заявка принята'}
+                return jsonify(data)
+            except:
+                db.session.rollback()
+            return jsonify({'message': 'Неизвестная ошибка'})
+        if button_value == 'Заявка принята':
+            data = {'message': 'Заявка принята'}
+            return jsonify(data)
+    if button_name == 'add_friend':
+        if button_value == 'Добавить в друзья':
+            try:
+                relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                db.session.add(relations)
+                db.session.flush()
+                db.session.commit()
+                data = {'message': 'Заявка отправлена'}
+                return jsonify(data)
+            except:
+                db.session.rollback()
+                return jsonify({'message': 'Неизвестная ошибка'})
+        if button_value == 'Заявка отправлена':
+            data = {'message': 'Заявка отправлена'}
+            return jsonify(data)
+    if button_name == 'write_message':
+        return redirect(url_for('.messenger'))
+    if button_name == 'make_graph':
+        graph = open_relations()
+        print(graph_maker(graph, current_user.tag, user_tag))
+
+
+
     query = [row for row in engine.connect().execute(
         select(Relations).where(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag),
                                 Relations.status == 'accepted'))]
@@ -161,34 +212,14 @@ def user_profile(user_tag):
                 (Relations.friend_id == current_user.tag)),
             Relations.status == 'accepted'))]
 
-    value = request.form.get('button_text')
-
-    if value == 'accept_invite':
-        try:
-            operation_id = pending_invite[0][0]
-            relation = Relations.query.get(operation_id)
-            relation.status = 'accepted'
-            db.session.commit()
-
-            dict_relations = open_relations()
-            if user_tag not in dict_relations[current_user.tag]:
-                dict_relations[current_user.tag].append(user_tag)
-            if current_user.tag not in dict_relations[user_tag]:
-                dict_relations[user_tag].append(current_user.tag)
-            dump_relations(dict_relations)
-            data = {'message': 'Заявка принята'}
-            print(value)
-            return jsonify(data)
-        except:
-            db.session.rollback()
-    if value == 'add_friend':
-        try:
-            relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-            db.session.add(relations)
-            db.session.flush()
-            db.session.commit()
-        except:
-            db.session.rollback()
+    # if value == 'add_friend':
+    #     try:
+    #         relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+    #         db.session.add(relations)
+    #         db.session.flush()
+    #         db.session.commit()
+    #     except:
+    #         db.session.rollback()
 
     # if request.method == 'POST':
     #     result = list(request.form.keys())[0]

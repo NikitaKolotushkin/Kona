@@ -17,7 +17,7 @@
             {% if current_user.tag != profile_owner['tag'] %}
             <form action="" class="interactive_form" id="interactive_form" name="interactive_form" method="POST">
                 {% if pending_invite %}
-                <input type="submit" value="Принять заявку" name="accept_invite" id="accept_friend">
+                <input type="submit" value="Принять заявку" name="accept_invite" id="accept_invite">
                 {% elif sent_invite or accepted_invite %}
                 <input type="submit" value="Добавить в друзья" name="add_friend" style="display: none;">
                 {% else %}
@@ -81,16 +81,18 @@
         var profileTag = "{{ profile_owner['tag'] }}";
         document.getElementById('interactive_form').addEventListener('click', function(event) {
             event.preventDefault();
-            var buttonValue = event.target.name;
+            var buttonName = event.target.name;
+            var buttonValue = event.target.value;
             $.ajax({
                 url: '/user/' + profileTag,
                 type: 'post',
                 data: {
-                    button_text: buttonValue
+                    button_name: buttonName,
+                    button_value: buttonValue
                 },
                 success: function(response){
                     var message = response.message
-                    document.getElementById('accept_friend').value = message
+                    document.getElementById(buttonName).value = message
                     console.log(message)
                 },
                 error: function(error){
