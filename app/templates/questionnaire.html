@@ -1,72 +1,73 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.js" type="text/javascript"></script>
-    <script src="https://snipp.ru/cdn/selectize.js/0.12.6/dist/js/selectize.min.js"></script>
-    
-    <div class="container">
-        <div class="questionnaire_wrapper">
-            
-            <div class="questionnaire_wrapper__left">
-                <div class="title_block">
-                    <img src="../static/img/logo_light.png" alt="">
-                    <h1>Узнаем кое-что</h1>
-                </div>
-                <div class="form_block">
-                    <form action="" class="questionnaire_form" id="questionnaire_form" method="POST">
-                        <input type="text" name="phone" class="phone" placeholder="Телефон">
-                        <input type="date" name="birthdate" class="birthdate" placeholder="Дата рождения">
-                        <select id="city" name="city" form="questionnaire_form">
-                            <option value="" disabled selected>Ваш город</option>
-                           
-                            {% for city in cities %}
-                                <option value={{city}}>{{city}}</option>
-                            {% endfor %}
 
-                          </select>
-                          <select name="university" id="university">
-                            <option value="" disabled selected>Ваш университет</option>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.js"
+        type="text/javascript"></script>
+<script src="https://snipp.ru/cdn/selectize.js/0.12.6/dist/js/selectize.min.js"></script>
 
-                            {% for university in universities %}
-                                <option value="{{university}}">{{university}}</option>
-                            {% endfor %}
+<div class="container">
+    <div class="questionnaire_wrapper">
 
-                          </select>
-                          <input type="submit" class="form__button" value="Далее">
-                    </form>
-                </div>
+        <div class="questionnaire_wrapper__left">
+            <div class="title_block">
+                <img src="../static/img/logo_light.png" alt="">
+                <h1>Узнаем кое-что</h1>
             </div>
-            <div class="questionnaire_wrapper__right">
+            <div class="form_block">
+                <form action="" class="questionnaire_form" id="questionnaire_form" method="POST">
+                    <input type="text" name="phone" class="phone" placeholder="Телефон">
+                    <input type="date" name="birthdate" class="birthdate" placeholder="Дата рождения">
+                    <select id="city" name="city" form="questionnaire_form">
+                        <option value="" disabled selected>Ваш город</option>
 
+                        {% for city in cities %}
+                        <option value={{city}}>{{city}}</option>
+                        {% endfor %}
+
+                    </select>
+                    <select name="university" id="university">
+                        <option value="" disabled selected>Ваш университет</option>
+
+                        {% for university in universities %}
+                        <option value="{{university}}">{{university}}</option>
+                        {% endfor %}
+
+                    </select>
+                    <input type="submit" class="form__button" value="Далее">
+                </form>
             </div>
         </div>
+        <div class="questionnaire_wrapper__right">
+
+        </div>
     </div>
+</div>
 
-    {{ data }}
+{{ data }}
 
-    <script>
-        $(".phone").mask("+7(999)999-99-99");
+<script>
+    $(".phone").mask("+7(999)999-99-99");
 
-        var city_selector = document.querySelector("#city");
-        var university_selector = document.querySelector("#university");
+    var city_selector = document.querySelector("#city");
+    var university_selector = document.querySelector("#university");
 
 
-          document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         var today = new Date().toISOString().split('T')[0];
         document.querySelector('.birthdate').setAttribute('max', today);
 
     });
-        city_selector.addEventListener('change', function (e) {
-            console.log("Город: " + e.target.value);
-            console.log("Универ: " + university_selector.value);
-        })
+    city_selector.addEventListener('change', function (e) {
+        console.log("Город: " + e.target.value);
+        console.log("Универ: " + university_selector.value);
+    })
 
-    </script>
+</script>
 
-    {% for category, msg in get_flashed_messages(True) %}
-        <div id="flash" class="flash {{category}}">{{msg}}</div>
-    {% endfor %}
+{% for category, msg in get_flashed_messages(True) %}
+<div id="flash" class="flash {{category}}">{{msg}}</div>
+{% endfor %}
 
 {% endblock %}
