@@ -332,6 +332,18 @@ main {
     transform: translate(-50%, -50%);
     text-align: center;
 }
+.flash.error {
+    width: 25%;
+    position: absolute;
+    text-align: center;
+    background-color: #ff0000;
+    border: 3px solid #ff0000;
+    border-radius: 5vh;
+    color: #FFFFFF;
+    bottom: 30px;
+    right: 30px;
+    padding: 5px;
+}
 
 .form_wrapper h3 {
     font-weight: 900;
