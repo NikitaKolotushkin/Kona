@@ -1,5 +1,11 @@
 /* BASE STYLES */
 
+:root {
+    --nav-height: 8vh;
+    --main-bg-color-dark: #121212;
+    --secondary-bg-color-dark: #1A1D21;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +22,7 @@ html {
 }
 
 body {
-    background: rgb(18, 18, 18);
+    background: var(--main-bg-color-dark);
     color: #fff;
     z-index: 4;
     /* overflow: hidden; */
@@ -65,9 +71,9 @@ a {
 }
 
 nav {
-    background: #1A1D21;
+    background: var(--secondary-bg-color-dark);
     backdrop-filter: blur(15px);
-    height: 8vh;
+    height: var(--nav-height);
     /* z-index:9999; */
 }
 
@@ -163,13 +169,14 @@ main {
     position: relative;
     z-index:4;
 }
+
 .container__content {
     display: flex;
 }
 
 .sidebar_left {
     width: 22%;
-    height: 92vh;
+    height: calc(100vh - var(--nav-height));
 }
 
 .sidebar_left__menu {
@@ -257,12 +264,12 @@ main {
 
 .sidebar_right {
     width: 22%;
-    height: 92vh;
+    height: calc(100vh - var(--nav-height));
 }
 
 .main_content {
     width: 56%;
-    height: 92vh;
+    height: calc(100vh - var(--nav-height));
     overflow: scroll;
 }
 
@@ -315,7 +322,7 @@ main {
 /* UNAUTHORIZED INDEX */
 
 .greetings {
-    height: 92vh;
+    height: calc(100vh - var(--nav-height));
     background: #1d1d1d url(../img/kona_poster_1.png);
     background-repeat: no-repeat;
     background-size: cover;
@@ -382,6 +389,79 @@ input.form__button:hover {
     transition: all .2s ease;
 }
 
+.tab {
+    display: none;
+    height: calc(100vh - var(--nav-height));
+    border: 2px solid red;
+}
+
+.tab input[type="text"]::placeholder {
+    text-align: center;    
+}
+
+#regPrevBtn {
+    border: none;
+    background: none;
+    position: absolute;
+    top: 10%;
+    left: 2%;
+}
+
+#regPrevBtn img {
+    width: 42px;
+    height: 30px;
+}
+
+#regNextBtn {
+    margin-top: 3vh;
+    padding: 1vh 4vh;
+    background: #fff;
+    border: none;
+    border-radius: 5vh;
+    color: black;
+    font-weight: bold;
+    font-size: 3vh;
+}
+
+.form_block h4 {
+    width: 37%;
+    margin: 0 auto;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+.form_block .btn-secondary {
+    width: 30%;
+    margin-bottom: 1vh;
+    font-weight: bold;
+    background: #979797;
+    color: black;
+    font-size: 3vh;
+    border: none;
+    border-radius: 5vh;
+}
+
+.form_block .btn-secondary:hover {
+    background: #fff;
+    color: #000;
+}
+
+.form_block .btn-secondary:checked + label {
+    background: var(--secondary-bg-color-dark);
+    color: red;
+}
+
+.form_block__born {
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.form_block__born input[type="text"] {
+    width: 30%;
+}
+
 /* USER LOGIN */
 
 
@@ -389,7 +469,7 @@ input.form__button:hover {
 
 .profile_content {
     width: 56%;
-    height: 92vh;
+    height: calc(100vh - var(--nav-height));
     overflow: auto;
 }
 
@@ -506,24 +586,32 @@ input.form__button:hover {
 .questionnaire_wrapper {
     display: flex;
     justify-content: space-between;
+    height: 85vh;
+    margin-top: 3vh;
+    border: 2px solid red;
 }
 
 .questionnaire_wrapper__left, .questionnaire_wrapper__right {
     height: 85vh;
-    width: 60%;
-    margin-top: 3vh;
+    width: 50%;
     /* border: 2px solid red; */
 }
 
 .questionnaire_wrapper__left {
-    margin: auto 0;
+    display: table;
+    vertical-align: middle;
+}
+
+.questionnaire_wrapper__left_blocks {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .title_block {
     width: 100%;
     margin: 0;
-    margin-top: 10vh;
     text-align: center;
+    border: 2px solid blue;
 }
 
 .title_block img {
@@ -537,17 +625,18 @@ input.form__button:hover {
     margin-bottom: 0;
 }
 
+.title_block h4 {
+    font-weight: bold;
+}
+
 .form_block {
-    width: 90%;
-    /* border: 2px solid blue; */
-    height: 40vh;
+    border: 2px solid blue;
     margin: 0 auto;
-    margin-top: 5vh;
     text-align: center;
 }
 
 .form_block input, select {
-    width: 100%;
+    width: 50%;
     height: 5vh;
     margin-bottom: 2.5vh;
     border-radius: 2.5vh;
@@ -577,7 +666,7 @@ input.form__button:hover {
 }
 
 .questionnaire_wrapper__right {
-    width: 35%;
+    width: 40%;
     background: linear-gradient(45deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%), url('../img/questionnaire.jpeg');
     background-position: center;
     background-repeat: no-repeat;
@@ -596,7 +685,7 @@ input.form__button:hover {
     flex-wrap: wrap;
     overflow: auto;
     align-content: flex-start;
-    background: #1A1D21;
+    background: var(--secondary-bg-color-dark);
     border-radius: 2.5vh;
 
     /* border: 2px solid red; */
@@ -652,7 +741,7 @@ input.form__button:hover {
     flex-wrap: wrap;
     overflow: auto;
     align-content: flex-start;
-    background: #1A1D21;
+    background: var(--secondary-bg-color-dark);
     border-radius: 2.5vh;
 
     /* border: 2px solid red; */
