@@ -35,3 +35,5 @@ tzlocal==4.2
 virtualenv==20.14.0
 Werkzeug==2.3.7
 zipp==3.16.2
+Flask-SocketIO==5.3.6
+pyIsEmail==2.0.1
