@@ -1,4 +1,4 @@
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
     .nav_search {
         display: none;
     }
@@ -10,4 +10,16 @@
     .user_profile {
         width: 50%;
     }
+
+    .star {
+        display: none;
+    }
+
+    .bell {
+        display: none;
+    }
+}
+
+@media (max-width: 1400px) {
+    
 }

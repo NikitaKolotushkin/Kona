@@ -393,6 +393,7 @@ input.form__button:hover {
     display: none;
     height: calc(100vh - var(--nav-height));
     border: 2px solid red;
+    text-align: center;
 }
 
 .tab input[type="text"]::placeholder {
@@ -635,6 +636,10 @@ input.form__button:hover {
     text-align: center;
 }
 
+.form_block:not(:first-child) {
+    height: 50vh;
+}
+
 .form_block input, select {
     width: 50%;
     height: 5vh;
@@ -663,6 +668,15 @@ input.form__button:hover {
 .form_block input[type=submit] {
     width: 30%;
     margin: 0 auto;
+}
+
+.terms_of_use {
+    color: #00EFE1;
+    font-size: 3vh;
+    font-weight: bold;
+    background: #191C20;
+    padding: 1vh 2vh;
+    border-radius: 7vh;
 }
 
 .questionnaire_wrapper__right {
