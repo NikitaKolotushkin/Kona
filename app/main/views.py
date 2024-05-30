@@ -4,7 +4,7 @@
 import random
 from datetime import datetime
 
-from flask import flash, render_template, redirect, request, url_for, session, jsonify
+from flask import flash, jsonify, redirect, render_template, request, session, send_file, send_from_directory, url_for
 from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy.orm import load_only
 from sqlalchemy.sql import select, or_, and_
@@ -119,34 +119,33 @@ def registration():
 @main.route('/questionnaire', methods=['GET', 'POST'])
 @login_required
 def questionnaire():
-	cities = [row[1] for row in engine.connect().execute(select(City))]
-	universities = [row[1] for row in engine.connect().execute(select(University))]
+	# cities = [row[1] for row in engine.connect().execute(select(City))]
+	# universities = [row[1] for row in engine.connect().execute(select(University))]
 
-	if request.method == 'POST':
-		phone = request.form.get("phone")
-		birthdate = datetime.strptime(request.form.get("birthdate"), '%Y-%m-%d')
-		selected_city = request.form.get("city")
-		selected_university = request.form.get("university")
+	# if request.method == 'POST':
+	# 	phone = request.form.get("phone")
+	# 	birthdate = datetime.strptime(request.form.get("birthdate"), '%Y-%m-%d')
+	# 	selected_city = request.form.get("city")
+	# 	selected_university = request.form.get("university")
 
-		if len(phone) != 0:
-			try:
-				current_user.phone = phone
-				current_user.birthdate = birthdate
-				current_user.city_id = \
-					[row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
-				current_user.university_id = [row for row in engine.connect().execute(
-					select(University.id).where(University.name == selected_university))][0][0]
-				db.session.flush()
-				db.session.commit()
+	# 	if len(phone) != 0:
+	# 		try:
+	# 			current_user.phone = phone
+	# 			current_user.birthdate = birthdate
+	# 			current_user.city_id = \
+	# 				[row for row in engine.connect().execute(select(City.id).where(City.name == selected_city))][0][0]
+	# 			current_user.university_id = [row for row in engine.connect().execute(
+	# 				select(University.id).where(University.name == selected_university))][0][0]
+	# 			db.session.flush()
+	# 			db.session.commit()
 
-				return redirect(url_for('.user_profile', user_tag=current_user.tag))
+	# 			return redirect(url_for('.user_profile', user_tag=current_user.tag))
 
-			except:
-				db.session.rollback()
-				flash('Неизвестная ошибка', 'error')
+	# 		except:
+	# 			db.session.rollback()
+	# 			flash('Неизвестная ошибка', 'error')
 
-	return render_template('questionnaire.html', title='Kona | Анкета пользователя', cities=cities,
-						   universities=universities)
+	return render_template('questionnaire.html', title='Kona | Анкета пользователя')
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
@@ -305,8 +304,13 @@ def events():
 
 @main.route('/event/<event_id>', methods=['GET', 'POST'])
 @login_required
-def event_page(event_id):
+def event(event_id):
 	return render_template('event_page.html', title='Ивент')
+
+
+@main.route('/docs/<document_name>', methods=['GET', 'POST'])
+def docs(document_name):
+	return send_from_directory('static/docs/', document_name)
 
 
 @main.route('/logout')
