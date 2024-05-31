@@ -610,7 +610,6 @@ input.form__button:hover {
 
 .title_block {
     width: 100%;
-    margin: 0;
     text-align: center;
     border: 2px solid blue;
 }

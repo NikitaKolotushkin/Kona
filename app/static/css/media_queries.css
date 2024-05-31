@@ -1,4 +1,4 @@
-@media (max-width: 1200px) {
+@media (max-width: 1199px) {
     .nav_search {
         display: none;
     }
@@ -20,6 +20,12 @@
     }
 }
 
-@media (max-width: 1400px) {
-    
+@media (max-width: 991px) {
+    .sidebar_left {
+        display: none;
+    }
+
+    .friends_content {
+        width: 100%;
+    }
 }

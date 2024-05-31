@@ -117,7 +117,6 @@ def registration():
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
-@login_required
 def questionnaire():
 	# cities = [row[1] for row in engine.connect().execute(select(City))]
 	# universities = [row[1] for row in engine.connect().execute(select(University))]
@@ -187,6 +186,7 @@ def user_profile(user_tag):
 		if button_value == 'Заявка принята':
 			data = {'message': 'Заявка принята'}
 			return jsonify(data)
+	
 	if button_name == 'add_friend':
 		if button_value == 'Добавить в друзья':
 			try:
@@ -202,8 +202,10 @@ def user_profile(user_tag):
 		if button_value == 'Заявка отправлена':
 			data = {'message': 'Заявка отправлена'}
 			return jsonify(data)
+	
 	if button_name == 'write_message':
 		return redirect(url_for('.messenger'))
+	
 	if button_name == 'make_graph':
 		graph = open_relations()
 		print(graph_maker(graph, current_user.tag, user_tag))
