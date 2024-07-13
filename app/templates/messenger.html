@@ -1,20 +1,22 @@
-{% extends 'index.html' %}
+{% extends 'main.html' %}
 
-{% block index_content %}
+{% block main_content %}
 
-<div class="message_content">
-    {% for dialogue in dialogue_list %}
-    <div class="message_content__message">
-        <img src="..//static/img/avatar_cap.png">
-        <div class="message_info">
-            <a>{{ dialogue['name'] }} {{ dialogue['surname'] }}</a>
-            <a>{{ dialogue['last_message'] }}</a>
+    {% include 'sidebar_left.html' %}
+
+    <div class="message_content main_content">
+        {% for dialogue in dialogue_list %}
+        <div class="message_content__message">
+            <img src="..//static/img/avatar_cap.png">
+            <div class="message_info">
+                <a>{{ dialogue['name'] }} {{ dialogue['surname'] }}</a>
+                <a>{{ dialogue['last_message'] }}</a>
+            </div>
         </div>
+        {% if dialogue != dialogue_list[-1] %}
+        <div class="line"></div>
+        {% endif %}
+        {% endfor %}
     </div>
-    {% if dialogue != dialogue_list[-1] %}
-    <div class="line"></div>
-    {% endif %}
-    {% endfor %}
-</div>
 
 {% endblock %}

@@ -15,46 +15,8 @@
 </head>
 
 <body>
-<nav class="navbar">
-    <div class="container">
-        <a class="nav__logo_section" href="{{ url_for('main.index') }}">
-            <img src="../static/img/logo_light.png" alt="">
-            Кона
-        </a>
-        {% if current_user.is_authenticated %}
-        <div class="nav_search">
-            <input type="text" placeholder="Найти что-нибудь интересное...">
-            <button><img class="star" src="../static/img/star.svg" alt=""></button>
-            <button><img class="bell" src="../static/img/bell.svg" alt=""></button>
-            <!-- <a href="">Найти!</a> -->
-        </div>
-        {% endif %}
 
-        {% if current_user.is_authenticated %}
-        <div class="user_profile">
-            <a href="{{ url_for('main.user_profile', user_tag=current_user.tag) }}">
-                <img class="avatar" src="../static/img/avatar_cap.png" alt="Аватар">
-                <a class="username" href="{{ url_for('main.user_profile', user_tag=current_user.tag) }}">{{
-                    current_user.name }}</a>
-                <img class="university" src="../static/img/universities/spb/spbgu.png" alt="ВУЗ">
-            </a>
-        </div>
-
-        {% else: %}
-        <div class="user_profile">
-            <a href="{{ url_for('main.login') }}">Вход / Регистрация</a>
-        </div>
-
-        {% endif %}
-
-    </div>
-</nav>
-
-{% block content %}{% endblock %}
-
-<footer>
-    <div class="container"></div>
-</footer>
+    {% block content %}{% endblock %}
 
 </body>
 

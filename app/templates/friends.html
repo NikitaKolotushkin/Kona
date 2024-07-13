@@ -1,21 +1,23 @@
-{% extends 'index.html' %}
+{% extends 'main.html' %}
 
-{% block index_content %}
+{% block main_content %}
 
-<div class="friends_content">
-    {% for friend in friend_list %}
-    <div class="friends_content__user">
-        <img src="..//static/img/avatar_cap.png">
-        <div class="friend_info">
-            <a href="/user/{{ friend['tag'] }}">{{ friend['name'] }} {{ friend['surname'] }}</a>
-            <p>{{ friend['university'] if friend['university'] != None else '' }} </p>
-            <a href="">Написать сообщение</a>
+    {% include 'sidebar_left.html' %}
+
+    <div class="friends_content main_content">
+        {% for friend in friend_list %}
+        <div class="friends_content__user">
+            <img src="..//static/img/avatar_cap.png">
+            <div class="friend_info">
+                <a href="/user/{{ friend['tag'] }}">{{ friend['name'] }} {{ friend['surname'] }}</a>
+                <p>{{ friend['university'] if friend['university'] != None else '' }} </p>
+                <a href="">Написать сообщение</a>
+            </div>
         </div>
+        {% if friend != friend_list[-1] %}
+        <div class="line"></div>
+        {% endif %}
+        {% endfor %}
     </div>
-    {% if friend != friend_list[-1] %}
-    <div class="line"></div>
-    {% endif %}
-    {% endfor %}
-</div>
 
 {% endblock %}

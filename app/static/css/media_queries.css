@@ -21,11 +21,11 @@
 }
 
 @media (max-width: 991px) {
-    .sidebar_left {
+    .sidebar {
         display: none;
     }
 
-    .friends_content {
+    .main_content {
         width: 100%;
     }
 }

@@ -1,48 +1,50 @@
-{% extends 'index.html' %}
+{% extends 'main.html' %}
 
-{% block index_content %}
+{% block main_content %}
 
-<div class="main_content">
-    <a href="">
-        <div class="event_block">
-            <div class="event_block__info">
-                <p>12 октября</p>
-                <p>17:00 - 19:00</p>
-                <p>Главный корпус СПбГУ</p>
+    {% include 'sidebar_left.html' %}
+
+    <div class="main_content">
+        <a href="{{ url_for('.index') }}">
+            <div class="event_block">
+                <div class="event_block__info">
+                    <p>12 октября</p>
+                    <p>17:00 - 19:00</p>
+                    <p>Главный корпус СПбГУ</p>
+                </div>
+                <h2 class="event_block__title">
+                    Открытая лекция профессора Григорьева по математике и математическому анализу
+                </h2>
             </div>
-            <h2 class="event_block__title">
-                Открытая лекция профессора Григорьева по математике и математическому анализу
-            </h2>
-        </div>
-    </a>
-    <a href="">
-        <div class="event_block event_block_1">
-            <div class="event_block__info">
-                <p>29 сентября</p>
-                <p>17:00 - 19:00</p>
-                <p>Дом Зингера</p>
+        </a>
+        <a href="">
+            <div class="event_block event_block_1">
+                <div class="event_block__info">
+                    <p>29 сентября</p>
+                    <p>17:00 - 19:00</p>
+                    <p>Дом Зингера</p>
+                </div>
+                <h2 class="event_block__title">
+                    Питч-встреча молодых IT-специалистов от компании VK
+                </h2>
             </div>
-            <h2 class="event_block__title">
-                Питч-встреча молодых IT-специалистов от компании VK
-            </h2>
-        </div>
-    </a>
-    <a href="">
-        <div class="event_block event_block_2">
-            <div class="event_block__info">
-                <p>13 ноября</p>
-                <p>17:00 - 19:00</p>
-                <p>Концертный зал ГУУ</p>
+        </a>
+        <a href="">
+            <div class="event_block event_block_2">
+                <div class="event_block__info">
+                    <p>13 ноября</p>
+                    <p>17:00 - 19:00</p>
+                    <p>Концертный зал ГУУ</p>
+                </div>
+                <h2 class="event_block__title">
+                    Бардовский студенческий концерт
+                </h2>
             </div>
-            <h2 class="event_block__title">
-                Бардовский студенческий концерт
-            </h2>
-        </div>
-    </a>
-</div>
-<div class="sidebar sidebar_right" style="display: none;">
-    <h3>Параметры</h3>
-    <p>Этим мы потом <br> займемся</p>
-</div>
+        </a>
+    </div>
+    <div class="sidebar sidebar_right" style="display: none;">
+        <h3>Параметры</h3>
+        <p>Этим мы потом <br> займемся</p>
+    </div>
 
 {% endblock %}
