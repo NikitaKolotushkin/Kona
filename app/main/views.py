@@ -33,7 +33,7 @@ def message(data):
 @main.route('/')
 def index():
 	if not current_user.is_authenticated:
-		return render_template('index.html', title='Kona - Возможности в твоих руках!')
+		return render_template('main.html', title='Kona - Возможности в твоих руках!')
 	else:
 		return redirect(url_for('.events'))
 
