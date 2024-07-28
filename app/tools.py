@@ -6,6 +6,7 @@ import codecs
 import json
 import heapq
 from pyisemail import is_email
+import os
 
 
 def graph_maker(graph, start, end):
@@ -34,14 +35,20 @@ def validate_email(email) -> bool:
     :rtype: bool
     :return: True если email прошел валидацию, иначе - False
     """
-    pattern = '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+    pattern = "^(?=.{1,256})(?:(?!.*\.\.)[^@]+(?<!\.)@)(?:[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$"
     bool_result_with_dns = is_email(email, check_dns=True)
 
     return bool(re.match(pattern, email)) and bool_result_with_dns
 
+
 def open_relations():
-    with codecs.open('relations.json', 'r', 'utf_8_sig') as f:
-        dict_obj = json.load(f)
+    if os.path.exists('relations.json'):
+        with codecs.open('relations.json', 'r', 'utf_8_sig') as f:
+            dict_obj = json.load(f)
+    else:
+        with codecs.open('relations.json', 'w', 'utf_8_sig') as f:
+            json.dump({}, f)
+            return {}
     return dict_obj
 
 
