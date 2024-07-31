@@ -46,7 +46,7 @@ simple-websocket==1.0.0
 six==1.16.0
 SQLAlchemy==2.0.20
 tornado==6.1
-typing_extensions==4.7.1
+typing_extensions==4.9.0
 tzdata==2022.1
 tzlocal==4.2
 virtualenv==20.14.0
