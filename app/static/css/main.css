@@ -4,6 +4,8 @@
     --nav-height: 8vh;
     --main-bg-color-dark: #121212;
     --secondary-bg-color-dark: #1A1D21;
+
+    --input-bg-color-dark: #3C434D;
 }
 
 * {
@@ -101,7 +103,7 @@ nav {
 .nav_search input {
     width: 80%;
     padding-left: 3%;
-    background-color: #3C434D;
+    background-color: var(--input-bg-color-dark);
     color: #fff;
     border: none;
     border-radius: 2.5vh;
@@ -186,13 +188,8 @@ main {
 .sidebar h3 {
     font-size: 3vh;
     font-weight: 700;
-    padding-top: 1.8vh;
-    padding-bottom: .5vh;
-}
-
-.sidebar p {
-    font-size: 2vh;
-    font-weight: 500;
+    margin-top: 2vh;
+    margin-bottom: 1vh;
 }
 
 .sidebar_left__menu ul {
@@ -204,10 +201,12 @@ main {
 
 .sidebar_left__menu li {
     margin-bottom: .7vh;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar_left__menu a {
-    font-weight: 500;
+    font-weight: 400;
     display: flex;
     height: 3vh;
     align-items: center;
@@ -270,7 +269,7 @@ main {
 .main_content {
     width: 56%;
     height: calc(100vh - var(--nav-height));
-    overflow: scroll;
+    overflow: auto;
 }
 
 .event_block {
@@ -364,7 +363,7 @@ main {
     border-radius: 3vh;
     padding-left: 3%;
     outline: none;
-    background: #707070;
+    background: var(--input-bg-color-dark);
     border: none;
     color: #FFFCFC;
 }
@@ -509,7 +508,7 @@ input.form__button:hover {
 .interactive_form input[type=submit] {
     border: none;
     outline: none;
-    background-color: #3C434D;
+    background-color: var(--input-bg-color-dark);
     color: #fff;
     font-weight: 500;
     font-size: 18px;
@@ -552,10 +551,6 @@ input.form__button:hover {
     height: 100%;
     width: 40%;
     border: 2px solid blue;
-}
-
-.friends_list__item {
-    
 }
 
 .visited__notifications {
@@ -646,7 +641,7 @@ input.form__button:hover {
     border-radius: 2.5vh;
     padding-left: 15px;
     padding-right: 15px;
-    background-color: #707070;
+    background-color: var(--input-bg-color-dark);
     color: #fff;
     border: none;
     outline: none;
@@ -715,7 +710,7 @@ input.form__button:hover {
 }
 
 .friends_content__user:hover {
-    background-color: #3c434d;
+    background-color: var(--input-bg-color-dark);
 }
 
 .friends_content__user img {
