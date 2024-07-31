@@ -1,7 +1,11 @@
-{% extends 'index.html' %}
+{% extends 'main.html' %}
 
-{% block index_content %}
+{% block main_content %}
 
-    {{event_id}}  
+    {% include 'sidebar_left.html' %}
+    
+    <div class="main_content">
+        event_page
+    </div>
 
 {% endblock %}
