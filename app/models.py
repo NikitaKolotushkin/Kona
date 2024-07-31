@@ -51,7 +51,7 @@ class University(db.Model):
     __tablename__ = 'universities'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    name = db.Column(db.String(255), nullable=True, unique=True)
+    name = db.Column(db.String(256), nullable=True, unique=True)
     city_id = db.Column(db.Integer(), db.ForeignKey('cities.id'))
     users = relationship("User", backref=db.backref('university'), lazy='dynamic')
 
@@ -63,16 +63,25 @@ class Interest(db.Model):
     __tablename__ = 'interests'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    name = db.Column(db.String(256), nullable=False, unique=True)
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
     
+
 class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    name = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(16), nullable=False)
+    photo = db.Column(db.LargeBinary(8000))
+    color = db.Column(db.String(16), nullable=False)
+    name = db.Column(db.String(256), nullable=False)
+    description = db.Column(db.Text(2048))
+    directions = db.Column(db.Text(2048))
+    team = db.Column(db.Text(2048))
+    address = db.Column(db.String(256))
+    organizers = db.Column(db.String(2048))
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
@@ -86,6 +95,7 @@ class Relations(db.Model):
     friend_id = db.Column(db.Integer(), nullable=False)
     status = db.Column(db.String(10), default='pending')
 
+
 class Messages(db.Model):
     __tablename__ = 'messages'
 
@@ -95,6 +105,7 @@ class Messages(db.Model):
     data = db.Column(db.String(10000), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
     status = db.Column(db.String(10), nullable=False, default='sent')
+
 
 @login_manager.user_loader
 def load_user(user_id):
