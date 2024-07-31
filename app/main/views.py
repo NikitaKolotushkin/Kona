@@ -239,6 +239,18 @@ def user_profile(user_tag):
 						   profile_owner=profile_owner, friend_count=friend_count)
 
 
+@main.route('/events', methods=['GET', 'POST'])
+@login_required
+def events():
+	return render_template('events.html', title='Kona | Мероприятия')
+
+
+@main.route('/event/<event_id>', methods=['GET', 'POST'])
+@login_required
+def event(event_id):
+	return render_template('event_page.html', title=f'Ивент {event_id}', event_id=event_id)
+
+
 @main.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
@@ -298,16 +310,10 @@ def message(user_tag):
 	return render_template('message.html', title='Kona | Сообщение', user_tag=user_tag)
 
 
-@main.route('/events', methods=['GET', 'POST'])
+@main.route('/calendar')
 @login_required
-def events():
-	return render_template('events.html', title='Kona | Мероприятия')
-
-
-@main.route('/event/<event_id>', methods=['GET', 'POST'])
-@login_required
-def event(event_id):
-	return render_template('event_page.html', title='Ивент')
+def calendar():
+	return render_template('calendar.html', title='Календарь')
 
 
 @main.route('/docs/<document_name>', methods=['GET', 'POST'])
