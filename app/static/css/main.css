@@ -322,6 +322,7 @@ main {
 
 .greetings {
     height: calc(100vh - var(--nav-height));
+    width: 100%;
     background: #1d1d1d url(../img/kona_poster_1.png);
     background-repeat: no-repeat;
     background-size: cover;
