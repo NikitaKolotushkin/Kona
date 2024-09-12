@@ -1,7 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% include 'navbar.html' %}
-
-    <section class="greetings"></section>
+    <section class="greetings_" id="greetings_">
+        <div class="container">
+            <div class="greetings__navbar">
+                <a href="/about">
+                    О нас
+                </a>
+                <a href="/orgs">
+                    Для организаций
+                </a>
+                <a href="/job">
+                    Работа в Kona
+                </a>
+                <a href="/help">
+                    Помощь
+                </a>
+            </div>
+            <div class="greetings__content">
+                <img src="{{ url_for('static', filename='img/logo_light__full.png') }}" alt="">
+                <h2>Узнаем кое-что</h2>
+                <a href="/registration">Начнем регистрацию</a>
+                <a href="/login">Войти в аккаунт</a>
+            </div>
+        </div>
+        <img class="greetings__main_img" src="{{ url_for('static', filename='img/iphone_mockup.png') }}" alt="">
+    </section>
+    
 {% endblock %}
