@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime
 import random
-from datetime import datetime
 
 from flask import flash, jsonify, redirect, render_template, request, session, send_file, send_from_directory, url_for
 from flask_login import login_required, login_user, current_user, logout_user
@@ -30,6 +30,18 @@ def message(data):
 	print('message ', data)
 
 
+@main.before_request
+def change_session_lifetime():
+	session.permanent = True
+	session.permanent_session_lifetime = datetime.timedelta(days=7)
+
+
+@main.before_request
+def init_session():
+	# Some session attributes
+	pass
+
+
 @main.route('/')
 def index():
 	if not current_user.is_authenticated:
@@ -52,7 +64,6 @@ def login():
 				tag = [row for row in engine.connect().execute(selected_user)][0][0]
 
 				login_user(user, remember=True)
-				session.permanent = True
 				session['email'] = user.email
 
 				return redirect(url_for('.user_profile', user_tag=tag))
@@ -331,7 +342,7 @@ def logout():
 
 @main.app_errorhandler(401)
 def unauthorized(error):
-	return redirect(url_for('.index'))
+	return redirect(url_for('.index')), 401
 
 
 @main.app_errorhandler(404)
