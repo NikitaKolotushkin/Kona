@@ -8,7 +8,7 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BaseConfig:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or "".join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(25))
+    SECRET_KEY = 'SECRET_KEY'
     DEBUG = False
     TESTING = True
     SQLALCHEMY_DATABASE_URI = ''
@@ -16,12 +16,13 @@ class BaseConfig:
     TEMPLATES_AUTO_RELOAD = True
     COOKIE_SECURE = 'Secure'
     COOKIE_DURATION = timedelta(days=31)
+    SESSION_PERMANENT = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=31)
     REMEMBER_COOKIE_DURATION = timedelta(days=31)
-    UPLOAD_FOLDER: str = os.path.join(app_dir, 'uploads')
-    JSON_AS_ASCII: bool = True
-    HOST: str = os.environ.get('APP_HOST', '0.0.0.0')
-    PORT: int = int(os.environ.get('APP_PORT', 5000))
+    UPLOAD_FOLDER = os.path.join(app_dir, 'uploads')
+    JSON_AS_ASCII = True
+    HOST = os.environ.get('APP_HOST', '0.0.0.0')
+    PORT = int(os.environ.get('APP_PORT', 5000))
     RELOADER = False
 
 
