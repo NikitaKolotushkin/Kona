@@ -5,46 +5,86 @@
     {% include 'sidebar_left.html' %}
 
     <div class="main_content">
-        <a href="/event/0" target="_blank">
+        {% for el in results %}
+        <a href="/event/{{ el.id }}" target="_blank">
             <div class="event_block">
                 <div class="event_block__info">
-                    <p>12 октября</p>
-                    <p>17:00 - 19:00</p>
-                    <p>Главный корпус СПбГУ</p>
+                    <p id="dateDisplay">{{ el.start_time.strftime("%Y-%m-%d") }}</p>
+                    <p>{{ el.start_time.strftime("%H:%M") }} - {{ el.finish_time.strftime("%H:%M") }}</p>
+                    <p>{{ el.address }}</p>
                 </div>
                 <h2 class="event_block__title">
-                    Открытая лекция профессора Григорьева по математике и математическому анализу
+                    {{ el.name }}
                 </h2>
             </div>
         </a>
-        <a href="/event/0" target="_blank">
-            <div class="event_block event_block_1">
-                <div class="event_block__info">
-                    <p>29 сентября</p>
-                    <p>17:00 - 19:00</p>
-                    <p>Дом Зингера</p>
-                </div>
-                <h2 class="event_block__title">
-                    Питч-встреча молодых IT-специалистов от компании VK
-                </h2>
-            </div>
-        </a>
-        <a href="/event/0" target="_blank">
-            <div class="event_block event_block_2">
-                <div class="event_block__info">
-                    <p>13 ноября</p>
-                    <p>17:00 - 19:00</p>
-                    <p>Концертный зал ГУУ</p>
-                </div>
-                <h2 class="event_block__title">
-                    Бардовский студенческий концерт
-                </h2>
-            </div>
-        </a>
+
+        {% endfor %}
     </div>
+
     <div class="sidebar sidebar_right" style="display: none;">
         <h3>Параметры</h3>
         <p>Этим мы потом <br> займемся</p>
     </div>
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    var offset = 2;
+    var isLoading = false;
+    function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = {
+                day: 'numeric',
+                month: 'long'
+            };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+
+    var $mainContent = $('.main_content');
+    $mainContent.scroll(function() {
+
+        var scrollTop = $mainContent.scrollTop();
+        var scrollBottom = scrollTop + $mainContent.height();
+
+        if (scrollBottom >= $mainContent[0].scrollHeight - 100 && !isLoading) {
+                isLoading = true;
+
+            $.ajax({
+                url: '/events',
+                type: 'post',
+                data: {
+                    offset: offset,
+                    scroll: true,
+                },
+                success: function(data) {
+                    $(".main_content").append(data);
+                    console.log(data)
+                    offset += 2;
+                    isLoading = false;
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', status, error);
+                    isLoading = false;
+                }
+            });
+
+
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+            const dateDisplays = document.querySelectorAll('#dateDisplay');
+
+            dateDisplays.forEach(display => {
+              display.textContent = formatDate(display.textContent);
+            });
+});
+
+</script>
 
 {% endblock %}

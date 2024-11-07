@@ -82,6 +82,8 @@ class Event(db.Model):
     team = db.Column(db.Text(2048))
     address = db.Column(db.String(256))
     organizers = db.Column(db.String(2048))
+    start_time = db.Column(db.DateTime(), nullable=False)
+    finish_time = db.Column(db.DateTime(), nullable=False)
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
