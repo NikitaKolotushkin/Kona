@@ -5,15 +5,17 @@
             <li>
                 <a href="{{ url_for('.events') }}"><img src="../static/img/flag.svg" alt="">Мероприятия</a>
             </li>
-            <li>
-                <a href="{{ url_for('.friends') }}"><img src="../static/img/user.svg" alt="">Друзья</a>
-            </li>
-            <li>
-                <a href="{{ url_for('.messenger') }}"><img src="../static/img/message.svg" alt="">Сообщения</a>
-            </li>
-            <li>
-                <a href="{{ url_for('.calendar') }}"><img src="../static/img/calendar.svg" alt="">Календарь</a>
-            </li>
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('.friends') }}"><img src="../static/img/user.svg" alt="">Друзья</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('.messenger') }}"><img src="../static/img/message.svg" alt="">Сообщения</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('.calendar') }}"><img src="../static/img/calendar.svg" alt="">Календарь</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
     <div class="sidebar_left__soon">
