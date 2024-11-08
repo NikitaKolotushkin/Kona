@@ -8,26 +8,28 @@
     --input-bg-color-dark: #3C434D;
 }
 
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html {
-    font-family: 'Onest';
-}
-
-::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-}
-
 body {
     background: var(--main-bg-color-dark);
     color: #fff;
     z-index: 4;
+    font-family: 'Onest';
+    
     /* overflow: hidden; */
+}
+
+p {
+    font-weight: 300;
 }
 
 @keyframes rotate {
@@ -179,10 +181,6 @@ main {
 .sidebar_left {
     width: 22%;
     height: calc(100vh - var(--nav-height));
-}
-
-.sidebar_left__menu {
-    height: 20vh;
 }
 
 .sidebar h3 {
@@ -852,11 +850,12 @@ input.form__button:hover {
     height: 35vh;
     margin-top: 2vh;
     border-radius: 20px;
-
     position: relative;
+
+    margin-bottom: 3vh;
 }
 
-.event_header__wrapper {
+.event_header__inner {
     position: absolute;
     bottom: 0;
 }
@@ -869,20 +868,57 @@ input.form__button:hover {
     display: flex;
     width: 100%;
     height: 5vh;
+    
+    margin-bottom: 3vh;
 }
 
 .event_buttons button {
+    height: 5vh;
+    border: none;
+    outline: none;
+    background-color: var(--input-bg-color-dark);
+    color: #fff;
+    font-weight: 500;
+    margin-right: 1vw;
+}
+
+.event_buttons img {
+    height: 5vh;
+}
+
+.event_friends__list{
+    display: flex;
+    list-style: none;
+    text-align: center;
+    padding-left: 0;
+}
+
+.event_friends__list li {
+    margin-right: 1vw;
+}
+
+.event_friends__list img {
+    border-radius: 50%;
+    height: 8vh;
+}
+
+.event_friends__list p {
+    margin-bottom: 0;
+    font-size: 2vh;
 }
 
 .event_map {
     width: 100%;
     height: 35vh;
     border-radius: 20px;
+    position: relative;
+
+    margin-bottom: 3vh;
 }
 
-.event_description p {
-    font-weight: 200;
-    opacity: .86;
+.event_map__inner {
+    position: absolute;
+    bottom: 0;
 }
 
 .event_organizers__list {
@@ -890,7 +926,20 @@ input.form__button:hover {
     padding: 0;
 }
 
-.event_organizers__list li {
+.event_organizers__list a {
+    width: 100%;
     display: flex;
-    border: 1px solid green;
+    align-items: center;
+    margin-bottom: 2vh;
+}
+
+.event_organizers__list img {
+    border-radius: 50%;
+    height: 8vh;
+    margin-right: 1vw;
+}
+
+.event_organizers__list p {
+    font-size: 2vh;
+    margin-bottom: 0;
 }
