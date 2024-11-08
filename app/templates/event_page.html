@@ -5,7 +5,78 @@
     {% include 'sidebar_left.html' %}
     
     <div class="main_content">
-        event_page
+        <div class="event_header">
+            <div class="event_header__inner">
+                <h6 class="event_header__date">12 октября</h6>
+                <h6 class="event_header__time">17:00 - 19:00</h6>
+                <h6 class="event_header__place">Главный корпус СПбГУ</h6>
+                <h2 class="event_header__title">Открытая лекция профессора Григорьева по математике и математическому анализу</h2>
+            </div>
+        </div>
+        <div class="event_buttons">
+            <button class="event_buttons__sign_up">Записаться</button>
+            <button class="event_buttons__like"><img src="{{ url_for('static', filename='img/heart.png') }}"></button>
+            <button class="event_buttons__chat">Чат</button>
+        </div>
+        <div class="event_description">
+            <h3>Описание</h3>
+            <p>Приглашаем вас на захватывающую бесплатную лекцию по математическому анализу от профессора Санкт-Петербургского государственного университета, доктора Григорьева. Глубокие познания и огромный опыт профессора Григорьева делают его безусловным экспертом в области математического анализа. На этой уникальной лекции профессор расскжает о фундаментальных принципах, методах и приложениях математического анализа.</p>
+        </div>
+        <div class="event_friends">
+            <h3>Кто идет из ваших друзей?</h3>
+            <ul class="event_friends__list">
+                <li>
+                    <a href="/user/0">
+                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                        <p>Имя_Друга</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/user/0">
+                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                        <p>Имя_Друга</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="event_map">
+            <div class="event_map__inner">
+                <h3 class="event_map__address">Университетская наб., 7, Санкт-Петербург, ауд. 103</h3>
+            </div>
+        </div>
+        <div class="event_organizers">
+            <h3>Организаторы</h3>
+            <ul class="event_organizers__list">
+                <li>
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                        <p>Имя_Организатора</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                        <p>Имя_Организатора</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
+
+    <style>
+        .event_header {
+            background: linear-gradient(2deg, #121212 24.4%, rgba(11, 11, 11, 0.620182) 56.8%, rgba(0, 0, 0, 0) 101.5%), url({{ url_for('static', filename='img/event_block.jpeg')}});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .event_map {
+            background: linear-gradient(2deg, #121212 24.4%, rgba(11, 11, 11, 0.620182) 56.8%, rgba(0, 0, 0, 0) 101.5%), url({{ url_for('static', filename='img/map_example.png')}});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
 
 {% endblock %}
