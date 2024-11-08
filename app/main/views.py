@@ -45,10 +45,10 @@ def init_session():
 
 @main.route('/')
 def index():
-    if not current_user.is_authenticated:
-        return render_template('unauthorised.html', title='Kona - Возможности в твоих руках!')
-    else:
-        return redirect(url_for('.events'))
+    # if not current_user.is_authenticated:
+    #     return render_template('unauthorised.html', title='Kona - Возможности в твоих руках!')
+    # else:
+	return redirect(url_for('.events'))
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -252,7 +252,6 @@ def user_profile(user_tag):
 
 
 @main.route('/events', methods=['GET', 'POST'])
-@login_required
 def events():
     limit = 2
     if request.method == 'POST':
@@ -269,8 +268,10 @@ def events():
 
 
 @main.route('/event/<event_id>', methods=['GET', 'POST'])
-@login_required
 def event(event_id):
+    
+	# selected_event = Event.query.filter_by(id=event_id).first()
+
     return render_template('event_page.html', title=f'Ивент {event_id}', event_id=event_id)
 
 
