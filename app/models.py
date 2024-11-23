@@ -73,17 +73,17 @@ class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
-    status = db.Column(db.String(16), nullable=False)
-    photo = db.Column(db.LargeBinary(8000))
+    photo = db.Column(db.String(128), nullable=False)
     color = db.Column(db.String(16), nullable=False)
-    name = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text(2048))
+    format = db.Column(db.String(8), nullable=False)
+    start_time = db.Column(db.DateTime(), nullable=False)
     directions = db.Column(db.Text(2048))
+    participants = db.Column(db.Integer(), nullable=False)
     team = db.Column(db.Text(2048))
     address = db.Column(db.String(256))
     organizers = db.Column(db.String(2048))
-    start_time = db.Column(db.DateTime(), nullable=False)
-    finish_time = db.Column(db.DateTime(), nullable=False)
 
     def __repr__(self):
         return f'<{self.id}:{self.name}>'
