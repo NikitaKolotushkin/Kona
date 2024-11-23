@@ -32,6 +32,32 @@ p {
     font-weight: 300;
 }
 
+input, textarea {
+    border: none;
+    outline: none;
+    background-color: var(--secondary-bg-color-dark);
+    color: #fff;
+    font-weight: 300;
+    width: 100%;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #fff;
+    opacity: .85;
+    font-weight: 300;
+}
+
+button {
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+}
+
+li {
+    list-style: none;
+}
+
 @keyframes rotate {
   from {
     rotate: 0deg;
@@ -119,8 +145,6 @@ nav {
 }
 
 .nav_search button {
-    background: none;
-    border: none;
     height: 4vh;
 }
 
@@ -393,16 +417,16 @@ main {
     text-align: center;
 }
 .flash.error {
-    width: 25%;
+    width: 20vw;
     position: absolute;
-    text-align: center;
-    background-color: #ff0000;
-    border: 3px solid #ff0000;
-    border-radius: 5vh;
-    color: #FFFFFF;
-    bottom: 30px;
-    right: 30px;
     padding: 5px;
+    z-index: 999999;
+    text-align: center;
+    background-color: rgb(200, 55, 45);
+    border-radius: 4vh;
+    color: #FFFFFF;
+    bottom: 3vh;
+    right: 3vw;
 }
 
 .form_wrapper h3 {
@@ -578,9 +602,6 @@ input.form__button:hover {
 }
 
 .interests_list button {
-    outline: none;
-    border: none;
-    background: none;
     margin-right: 20px;
 }
 
@@ -805,14 +826,11 @@ input.form__button:hover {
     align-content: flex-start;
     background: var(--secondary-bg-color-dark);
     border-radius: 2.5vh;
-
-    /* border: 2px solid red; */
 }
 
 .message_content__message {
     width: 100%;
     height: 12vh;
-    /* border: 2px solid blue; */
     margin: 1vh 0;
     padding: 0 3%;
     display: flex;
@@ -874,8 +892,6 @@ input.form__button:hover {
 
 .event_buttons button {
     height: 5vh;
-    border: none;
-    outline: none;
     background-color: var(--input-bg-color-dark);
     color: #fff;
     font-weight: 500;
@@ -888,7 +904,6 @@ input.form__button:hover {
 
 .event_friends__list{
     display: flex;
-    list-style: none;
     text-align: center;
     padding-left: 0;
 }
@@ -910,7 +925,7 @@ input.form__button:hover {
 .event_map {
     width: 100%;
     height: 35vh;
-    border-radius: 20px;
+    border-radius: 2vh;
     position: relative;
 
     margin-bottom: 3vh;
@@ -921,25 +936,217 @@ input.form__button:hover {
     bottom: 0;
 }
 
-.event_organizers__list {
-    list-style: none;
+.organizers__list {
     padding: 0;
 }
 
-.event_organizers__list a {
+.organizers__list li {
+    display: flex;
+}
+
+.organizers__list a {
     width: 100%;
     display: flex;
     align-items: center;
     margin-bottom: 2vh;
 }
 
-.event_organizers__list img {
+.organizers__list img {
     border-radius: 50%;
     height: 8vh;
     margin-right: 1vw;
 }
 
-.event_organizers__list p {
+.organizers__list p {
     font-size: 2vh;
     margin-bottom: 0;
+}
+
+/* ADD EVENT */
+
+.add_event__header__inner {
+    width: 100%;
+    height: 100%;
+}
+
+.add_event__header__inner button {
+    position: absolute;
+    right: 5%;
+    top: 5%;
+    padding: 2%;
+    border-radius: 2vh;
+    background-color: var(--secondary-bg-color-dark);
+    color: #fff;
+}
+
+.add_event__header__inner__color {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    left: 5%;
+    bottom: 5%;
+}
+
+.add_event__header__inner__color input[type="color"] {
+    height: 3vh;
+    width: 3vh;
+    margin-left: 1vw;
+    border-radius: 50%;
+}
+
+.add_event__header__inner__color input[type="color"]:hover {
+    cursor: pointer;
+}
+
+.add_event__header__inner__color input[type="color"]::-moz-color-swatch {
+    border: none;
+}
+
+.add_event__header__inner__color input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 0;
+}
+  
+.add_event__header__inner__color input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+.add_event__name {
+    margin-bottom: 3vh;
+}
+
+.add_event__name input {
+    height: 8vh;
+    border-radius: 2vh;
+    padding: 2%;
+}
+
+.add_event__name input::placeholder {
+    vertical-align: top;
+}
+
+.add_event__description {
+    margin-bottom: 3vh;
+}
+
+.add_event__description textarea {
+    resize: none;
+    height: 30vh;
+    border-radius: 2vh;
+    padding: 2%;
+}
+
+.add_event__format__buttons {
+    display: flex;
+    justify-content: space-around;
+    
+    margin-bottom: 3vh;
+}
+
+.add_event__format__buttons input[type="radio"] {
+    opacity: 0;
+    position: fixed;
+    width: 0;
+}
+
+.add_event__format__buttons input[type="radio"]:checked + label {
+    background-color: #fff;
+    color: var(--secondary-bg-color-dark);
+    transition: all .2s ease;
+}
+
+.add_event__format__buttons label {
+    width: 40%;
+    padding-top: 3vh;
+    padding-bottom: 3vh;
+    border-radius: 2vh;
+    background-color: var(--secondary-bg-color-dark);
+    text-align: center;
+    font-size: 3vh;
+}
+
+.add_event__format__buttons label:hover {
+    cursor: pointer;
+}
+
+.add_event__datetime {
+    display: flex;
+
+    margin-bottom: 3vh;
+}
+
+.add_event__datetime div {
+    width: 50%;
+}
+
+.add_event__datetime div input {
+    width: 80%;
+    padding: 2%;
+    border-radius: 2vh;
+    margin: 0 auto;
+}
+
+.add_event__directions {
+    margin-bottom: 3vh;
+}
+
+.add_event__directions__list {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.add_event__directions__list li {
+    padding: 1% 2%;
+    border-radius: 3vh;
+    background-color: var(--secondary-bg-color-dark);
+}
+
+.add_event__participants {
+    margin-bottom: 3vh;
+}
+
+.add_event__participants input[type="number"] {
+    padding: 1% 2%;
+    border-radius: 2vh;
+}
+
+.add_event__map {
+    width: 100%;
+    height: 35vh;
+}
+
+.add_event__address {
+    margin-bottom: 3vh;
+}
+
+.add_event__address input {
+    height: 4vh;
+    padding: 2%;
+    border-radius: 2vh;
+}
+
+.add_event__submit_button {
+    width: 25%;
+    margin: 0 auto;
+    margin-bottom: 2vh;
+}
+
+.add_event__submit_button input {
+    width: 100%;
+    padding: 1.75vh 0 1.75vh 0;
+    border: .3vh solid #fff;
+    border-radius: 2vh;
+    background-color: #fff;
+    color: var(--secondary-bg-color-dark);
+    font-weight: 400;
+    font-size: 2.5vh;
+    transition: all .2s ease;
+}
+
+.add_event__submit_button input:hover {
+    border: .3vh solid #fff;
+    background-color: var(--secondary-bg-color-dark);
+    color: #fff;
 }
