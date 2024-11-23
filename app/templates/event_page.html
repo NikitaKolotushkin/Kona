@@ -22,23 +22,25 @@
             <h3>Описание</h3>
             <p>Приглашаем вас на захватывающую бесплатную лекцию по математическому анализу от профессора Санкт-Петербургского государственного университета, доктора Григорьева. Глубокие познания и огромный опыт профессора Григорьева делают его безусловным экспертом в области математического анализа. На этой уникальной лекции профессор расскжает о фундаментальных принципах, методах и приложениях математического анализа.</p>
         </div>
-        <div class="event_friends">
-            <h3>Кто идет из ваших друзей?</h3>
-            <ul class="event_friends__list">
-                <li>
-                    <a href="/user/0">
-                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
-                        <p>Имя_Друга</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="/user/0">
-                        <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
-                        <p>Имя_Друга</p>
-                    </a>
-                </li>
-            </ul>
-        </div>
+        {% if current_user.is_authenticated %}
+            <div class="event_friends">
+                <h3>Кто идет из ваших друзей?</h3>
+                <ul class="event_friends__list">
+                    <li>
+                        <a href="/user/0">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Имя_Друга</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/user/0">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Имя_Друга</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
         <div class="event_map">
             <div class="event_map__inner">
                 <h3 class="event_map__address">Университетская наб., 7, Санкт-Петербург, ауд. 103</h3>
@@ -46,7 +48,7 @@
         </div>
         <div class="event_organizers">
             <h3>Организаторы</h3>
-            <ul class="event_organizers__list">
+            <ul class="organizers__list">
                 <li>
                     <a href="#">
                         <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">

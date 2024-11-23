@@ -1,0 +1,147 @@
+{% extends 'main.html' %}
+
+{% block main_content %}
+
+    {% include 'sidebar_left.html' %}
+
+    <div class="main_content">
+        <form action="" method="post">
+            <div class="event_header">
+                <div class="add_event__header__inner">
+                    <button type="button">Изменить фото</button>
+                    <div class="add_event__header__inner__color">
+                        <h4>Цвет мероприятия: </h4>
+                        <input type="color" name="color" id="" value="#FF5050" >
+                    </div>
+                </div>
+            </div>
+            <div class="add_event__name">
+                <h3>Название</h3>
+                <input type="text" name="name" minlength="1" maxlength="128" placeholder="Введите название мероприятия">
+            </div>
+            <div class="add_event__description">
+                <h3>Описание</h3>
+                <textarea name="description" minlength="1" maxlength="2048" placeholder="Основная информация о Вашем мероприятии"></textarea>
+            </div>
+            <div class="add_event__format">
+                <h3>Формат</h3>
+                <div class="add_event__format__buttons">
+                    <input type="radio" name="format" id="add_event__format__offline" value="offline" checked>
+                    <label for="add_event__format__offline">Оффлайн</label>
+                    <input type="radio" name="format" id="add_event__format__online" value="online">
+                    <label for="add_event__format__online">Онлайн</label>
+                </div>
+            </div>
+            <div class="add_event__datetime">
+                <div class="add_event__datetime__date">
+                    <h3>Дата</h3>
+                    <input type="date" name="date" id="addEventDate" min=" ">
+                </div>
+                <div class="add_event__datetime__time">
+                    <h3>Время</h3>
+                    <input type="time" name="time" id="">
+                </div>
+            </div>
+            <div class="add_event__directions">
+                <h3>Направления</h3>
+                <ul class="add_event__directions__list">
+                    <li>
+                        <a href="#">Добавить</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="add_event__participants">
+                <h3>Ограничение участников</h3>
+                <input type="number" name="participants" id="" min="1" max="10000" value="1">
+            </div>
+            <div class="add_event__team">
+                <h3>Команда организаторов</h3>
+                <ul class="event_friends__list">
+                    <li>
+                        <a href="/user/0">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Должность</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/user/0">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Должность</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='img/add_circle.png') }}" alt="Добавить">
+                            <p>Добавить</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="event_map">
+                <div class="event_map__inner">
+                    <h3>Адрес</h3>
+                </div>
+            </div>
+            <div class="add_event__address">
+                <input type="text" name="address" placeholder="Введите адрес">
+            </div>
+            <div class="add_event__organizers">
+                <h3>Организаторы</h3>
+                <ul class="organizers__list">
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Имя_Организатора</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='img/avatar_cap.png') }}" alt="Организатор">
+                            <p>Имя_Организатора</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='img/add_circle.png') }}" alt="Добавить">
+                            <p>Добавить</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="add_event__submit_button">
+                <input type="submit" value="Создать">
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .event_header {
+            background: linear-gradient(2deg, #121212 24.4%, rgba(11, 11, 11, 0.620182) 56.8%, rgba(0, 0, 0, 0) 101.5%), url({{ url_for('static', filename='img/event_block.jpeg')}});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .event_map {
+            background: linear-gradient(2deg, #121212 24.4%, rgba(11, 11, 11, 0.620182) 56.8%, rgba(0, 0, 0, 0) 101.5%), url({{ url_for('static', filename='img/map_example.png')}});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+
+    <script>
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        }
+
+        const date = new Date();
+        date.setDate(date.getDate());
+
+        const today = date.toLocaleString("ru", options).split('.').reverse().join('-');
+        document.getElementById('addEventDate').setAttribute("min", today);
+    </script>
+
+{% endblock %}
