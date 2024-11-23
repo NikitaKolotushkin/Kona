@@ -263,6 +263,8 @@ def events():
 
             return render_template('only_events.html', results=results, title='Kona | Мероприятия')
     results = Event.query.order_by(desc(Event.start_time)).limit(limit).all()
+    # if len(results) == 0:
+    #     return redirect(url_for('.index'))
 
     return render_template('events.html', results=results, title='Kona | Мероприятия')
 
@@ -273,6 +275,56 @@ def event(event_id):
 	# selected_event = Event.query.filter_by(id=event_id).first()
 
     return render_template('event_page.html', title=f'Ивент {event_id}', event_id=event_id)
+
+
+@main.route('/add_event', methods=['GET', 'POST'])
+@login_required
+def add_event():
+    if request.method == 'POST':
+        color = request.form['color']
+        name = request.form['name']
+        description = request.form['description']
+        format_ = request.form['format']
+        date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d').date() if request.form['date'] else ''
+        time = datetime.datetime.strptime(request.form['time'], '%H:%M').time() if request.form['time'] else ''
+        directions = ''
+        participants = request.form['participants']
+        team = ''
+        address = request.form['address']
+        organizers = ''
+        print(datetime.datetime.combine(date, time))
+
+        if len(name) > 0 and date != '' and time != '':
+
+            try:
+                event = Event(
+                    photo='event_block.jpeg', 
+                    color=color, 
+                    name=name, 
+                    description=description, 
+                    format=format_, 
+                    start_time=datetime.datetime.combine(date, time),
+                    directions=directions,
+                    participants=participants,
+                    team=team,
+                    address=address,
+                    organizers=organizers
+                )
+
+                db.session.add(event)
+                db.session.flush()
+                db.session.commit()
+
+                return redirect(url_for('.event', event_id=0))
+
+            except:
+                db.session.rollback()
+                flash('Неизвестная ошибка. Повторите позже.', 'error')
+
+        else:
+            flash('Проверьте правильность введенных данных.', 'error')
+
+    return render_template('add_event.html', title=f'Создание Мероприятия')
 
 
 @main.route('/friends', methods=['GET', 'POST'])
