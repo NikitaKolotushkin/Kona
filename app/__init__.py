@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
@@ -16,6 +17,7 @@ engine = create_engine(current_config.SQLALCHEMY_DATABASE_URI)
 login_manager = LoginManager()
 migrate = Migrate()
 sio = SocketIO()
+jwt = JWTManager()
 
 
 def create_app(config_class):
@@ -33,6 +35,7 @@ def create_app(config_class):
 	login_manager.init_app(app)
 	login_manager.login_view = 'main.login'
 	sio.init_app(app)
+	jwt.init_app(app)
 
 	from .main import main as main_blueprint
 

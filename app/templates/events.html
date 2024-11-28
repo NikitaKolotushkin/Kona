@@ -28,30 +28,28 @@
     </div>
 
 
-
-
-
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
     var offset = 2;
     var isLoading = false;
+
     function formatDate(dateString) {
-            const date = new Date(dateString);
-            const options = {
-                day: 'numeric',
-                month: 'long'
-            };
-            return date.toLocaleDateString('ru-RU', options);
-        }
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        return date.toLocaleDateString('ru-RU', options);
+    }
 
     var $mainContent = $('.main_content');
     $mainContent.scroll(function() {
-
         var scrollTop = $mainContent.scrollTop();
         var scrollBottom = scrollTop + $mainContent.height();
 
         if (scrollBottom >= $mainContent[0].scrollHeight - 100 && !isLoading) {
-                isLoading = true;
+            isLoading = true;
 
             $.ajax({
                 url: '/events',
@@ -62,7 +60,10 @@
                 },
                 success: function(data) {
                     $(".main_content").append(data);
-                    console.log(data)
+
+                    // Обработка новых элементов
+                    processNewElements(data);
+
                     offset += 2;
                     isLoading = false;
                 },
@@ -71,20 +72,48 @@
                     isLoading = false;
                 }
             });
-
-
         }
     });
 
+    function processNewElements(newData) {
+        $(newData).find('.event_block').each(function() {
+            const $this = $(this);
+            const $title = $this.find('.event_block__title');
+
+            // Форматирование даты отображения
+            const $dateDisplay = $this.find('#dateDisplay');
+            $dateDisplay.text($dateDisplay.attr('data-original-date'));
+
+            // Форматирование времени начала и конца
+            const startTime = new Date($title.attr('data-start-time'));
+            const endTime = new Date($title.attr('data-end-time'));
+
+            $title.html(`${formatDate(startTime)} - ${formatDate(endTime)}`);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        const dateDisplays = document.querySelectorAll('#dateDisplay');
 
-            const dateDisplays = document.querySelectorAll('#dateDisplay');
+        dateDisplays.forEach(display => {
+            display.textContent = formatDate(display.textContent);
+        });
 
-            dateDisplays.forEach(display => {
-              display.textContent = formatDate(display.textContent);
-            });
-});
+        // Обработка существующих элементов
+        processExistingElements();
+    });
 
+    function processExistingElements() {
+        const eventTitles = document.querySelectorAll('.event_block__title');
+
+        eventTitles.forEach(title => {
+            const startTime = new Date(title.getAttribute('data-start-time'));
+            const endTime = new Date(title.getAttribute('data-end-time'));
+
+            title.innerHTML = `${formatDate(startTime)} - ${formatDate(endTime)}`;
+        });
+    }
 </script>
+
 
 {% endblock %}

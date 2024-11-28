@@ -5,7 +5,7 @@
             <li>
                 <a href="{{ url_for('.events') }}"><img src="../static/img/flag.svg" alt="">Мероприятия</a>
             </li>
-            {% if current_user.is_authenticated %}
+            {% if identity %}
                 <li>
                     <a href="{{ url_for('.friends') }}"><img src="../static/img/user.svg" alt="">Друзья</a>
                 </li>

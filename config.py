@@ -7,6 +7,12 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 class BaseConfig:
     SECRET_KEY = 'SECRET_KEY'
+    FLASK_JWT_SECRET_KEY = 'fuckinginsane'
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_COOKIE_CSRF_PROTECT = True
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+    JWT_COOKIE_SAMESITE = "Strict"
     DEBUG = False
     TESTING = True
     SQLALCHEMY_DATABASE_URI = ''
@@ -28,19 +34,22 @@ class DevelopmentConfig(BaseConfig):
     DEVELOPMENT = True
     DEBUG = True
     RELOADER = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir, 'app/databases/dev.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir,
+                                                                                                        'app/databases/dev.db')
 
 
 class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TESTING_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir, 'app/databases/test.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TESTING_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir,
+                                                                                                    'app/databases/test.db')
 
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('PRODUCTION_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir, 'app/databases/site.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('PRODUCTION_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir,
+                                                                                                       'app/databases/site.db')
 
 
 current_config = DevelopmentConfig

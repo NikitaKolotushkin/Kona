@@ -8,6 +8,7 @@
     --input-bg-color-dark: #3C434D;
 }
 
+
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
@@ -20,10 +21,11 @@
 }
 
 body {
+    font-family: 'Onest';
     background: var(--main-bg-color-dark);
     color: #fff;
     z-index: 4;
-    font-family: 'Onest';
+
     
     /* overflow: hidden; */
 }
@@ -142,6 +144,7 @@ nav {
     color: #C6C5C5;
     font-weight: 300;
     font-size: 3vh;
+    transform: translateY(15%);
 }
 
 .nav_search button {

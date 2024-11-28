@@ -5,7 +5,7 @@
             Kona
         </a>
         
-        {% if current_user.is_authenticated %}
+        {% if identity %}
             <div class="nav_search">
                 <input type="text" placeholder="Найти что-нибудь интересное...">
                 <button><img class="star" src="../static/img/star.svg" alt=""></button>
@@ -14,7 +14,7 @@
             </div>
         {% endif %}
 
-        {% if current_user.is_authenticated %}
+        {% if identity %}
             <div class="user_profile">
                 <a href="{{ url_for('main.user_profile', user_tag=current_user.tag) }}">
                     <img class="avatar" src="../static/img/avatar_cap.png" alt="Аватар">

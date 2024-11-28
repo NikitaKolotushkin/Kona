@@ -3,19 +3,23 @@
 
 import datetime
 import random
-
-from flask import flash, jsonify, redirect, render_template, request, session, send_file, send_from_directory, url_for
-from flask_login import login_required, login_user, current_user, logout_user
+from flask import flash, jsonify, redirect, render_template, request, session, send_file, send_from_directory, url_for, \
+    make_response
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, \
+    create_refresh_token, set_refresh_cookies, unset_jwt_cookies
+from flask_login import login_required, login_user, logout_user
 from sqlalchemy.orm import load_only
 from sqlalchemy.sql import select, or_, and_, desc
 import locale
 
-from app import engine, sio
+from app import engine, sio, jwt
 from app.models import *
 from app.tools import *
 from . import main
 
 locale.setlocale(locale.LC_ALL, "")
+
+
 @sio.event
 def connect():
     print('connected ', request.sid)
@@ -29,6 +33,39 @@ def disconnect():
 @sio.event
 def message(data):
     print('message ', data)
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({"msg": "Token has expired"}), 401
+
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({"msg": "Invalid token"}), 401
+
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return jsonify({"msg": "Request does not contain an access token"}), 401
+
+
+@main.post('/refresh')
+@jwt_required(refresh=True)
+def refresh():
+    # Get the identity of the current user from the refresh token
+    current_user = get_jwt_identity()
+
+    # Create a new access token
+    new_access_token = create_access_token(identity=current_user)
+
+    # Create the response
+    resp = jsonify({'refresh': True, 'access_token': new_access_token})
+
+    # Set the JWT access token in the response cookies
+    set_access_cookies(resp, new_access_token)
+
+    return resp, 200
 
 
 @main.before_request
@@ -48,7 +85,7 @@ def index():
     # if not current_user.is_authenticated:
     #     return render_template('unauthorised.html', title='Kona - Возможности в твоих руках!')
     # else:
-	return redirect(url_for('.events'))
+    return redirect(url_for('.events'))
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -60,18 +97,19 @@ def login():
 
         if user:
             if check_password_hash(user.password_hash, password):
+                access_token = create_access_token(identity=user.id)
+                refresh_token = create_refresh_token(identity=user.id)
 
-                selected_user = select(User.tag).where(User.email == email)
-                tag = [row for row in engine.connect().execute(selected_user)][0][0]
+                resp = make_response(redirect(url_for('.user_profile', user_tag=user.tag)))
+                set_access_cookies(resp, access_token)
+                set_refresh_cookies(resp, refresh_token)
 
-                login_user(user, remember=True)
-                session['email'] = user.email
-
-                return redirect(url_for('.user_profile', user_tag=tag))
+                return resp
             else:
                 flash('Неверный пароль!', category='error')
         else:
             flash('Неверная почта!', category='error')
+
     return render_template('user_login.html', title='Kona | Вход')
 
 
@@ -112,11 +150,12 @@ def registration():
                 db.session.flush()
                 db.session.commit()
 
-                login_user(user, remember=True)
-                session.permanent = True
-                session['email'] = user.email
+                access_token = create_access_token(identity=user.id)
 
-                return redirect(url_for('.questionnaire'))
+                resp = make_response(redirect(url_for('.questionnaire')))
+                set_access_cookies(resp, access_token)
+
+                return resp
 
             except:
                 db.session.rollback()
@@ -129,7 +168,13 @@ def registration():
 
 
 @main.route('/questionnaire', methods=['GET', 'POST'])
+@jwt_required()
 def questionnaire():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
     # cities = [row[1] for row in engine.connect().execute(select(City))]
     # universities = [row[1] for row in engine.connect().execute(select(University))]
 
@@ -156,12 +201,19 @@ def questionnaire():
     # 			db.session.rollback()
     # 			flash('Неизвестная ошибка', 'error')
 
-    return render_template('questionnaire.html', title='Kona | Анкета пользователя')
+    return render_template('questionnaire.html', title='Kona | Анкета пользователя', identuty=current_user_id,
+                           current_user=current_user)
 
 
 @main.route('/user/<user_tag>', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def user_profile(user_tag):
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
+
     user_data = [row for row in engine.connect().execute(select(User).where(user_tag == User.tag))][0]
     table_keys = User.__table__.columns.keys()
     profile_owner = {}
@@ -169,58 +221,60 @@ def user_profile(user_tag):
     university_exists = user_data.university_id is not None
     profile_owner['city_exists'] = city_exists
     profile_owner['university_exists'] = university_exists
+    if request.method == 'POST':
+        button_name = request.form.get('button_name')
+        button_value = request.form.get('button_value')
 
-    button_name = request.form.get('button_name')
-    button_value = request.form.get('button_value')
+        if button_name == 'accept_invite':
+            if button_value == 'Принять заявку':
+                try:
+                    pending_invite = [row for row in engine.connect().execute(
+                        select(Relations).where(
+                            and_(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
+                                 Relations.status == 'pending')))]
+                    operation_id = pending_invite[0][0]
+                    relation = Relations.query.get(operation_id)
+                    relation.status = 'accepted'
+                    db.session.commit()
 
-    if button_name == 'accept_invite':
-        if button_value == 'Принять заявку':
-            try:
-                pending_invite = [row for row in engine.connect().execute(
-                    select(Relations).where(and_(Relations.user_id == user_tag, Relations.friend_id == current_user.tag,
-                                                 Relations.status == 'pending')))]
-                operation_id = pending_invite[0][0]
-                relation = Relations.query.get(operation_id)
-                relation.status = 'accepted'
-                db.session.commit()
-
-                dict_relations = open_relations()
-                if user_tag not in dict_relations[current_user.tag]:
-                    dict_relations[current_user.tag].append(user_tag)
-                if current_user.tag not in dict_relations[user_tag]:
-                    dict_relations[user_tag].append(current_user.tag)
-                dump_relations(dict_relations)
+                    dict_relations = open_relations()
+                    if user_tag not in dict_relations[current_user.tag]:
+                        dict_relations[current_user.tag].append(user_tag)
+                    if current_user.tag not in dict_relations[user_tag]:
+                        dict_relations[user_tag].append(current_user.tag)
+                    dump_relations(dict_relations)
+                    data = {'message': 'Заявка принята'}
+                    return jsonify(data)
+                except:
+                    db.session.rollback()
+                return jsonify({'message': 'Неизвестная ошибка'})
+            if button_value == 'Заявка принята':
                 data = {'message': 'Заявка принята'}
                 return jsonify(data)
-            except:
-                db.session.rollback()
-            return jsonify({'message': 'Неизвестная ошибка'})
-        if button_value == 'Заявка принята':
-            data = {'message': 'Заявка принята'}
-            return jsonify(data)
 
-    if button_name == 'add_friend':
-        if button_value == 'Добавить в друзья':
-            try:
-                relations = Relations(user_id=current_user.tag, friend_id=user_tag)
-                db.session.add(relations)
-                db.session.flush()
-                db.session.commit()
+        if button_name == 'add_friend':
+            if button_value == 'Добавить в друзья':
+                print('xd')
+                try:
+                    relations = Relations(user_id=current_user.tag, friend_id=user_tag)
+                    db.session.add(relations)
+                    db.session.flush()
+                    db.session.commit()
+                    data = {'message': 'Заявка отправлена'}
+                    return jsonify(data)
+                except:
+                    db.session.rollback()
+                    return jsonify({'message': 'Неизвестная ошибка'})
+            if button_value == 'Заявка отправлена':
                 data = {'message': 'Заявка отправлена'}
                 return jsonify(data)
-            except:
-                db.session.rollback()
-                return jsonify({'message': 'Неизвестная ошибка'})
-        if button_value == 'Заявка отправлена':
-            data = {'message': 'Заявка отправлена'}
-            return jsonify(data)
 
-    if button_name == 'write_message':
-        return redirect(url_for('.messenger'))
+        if button_name == 'write_message':
+            return redirect(url_for('.messenger'))
 
-    if button_name == 'make_graph':
-        graph = open_relations()
-        print(graph_maker(graph, current_user.tag, user_tag))
+        if button_name == 'make_graph':
+            graph = open_relations()
+            print(graph_maker(graph, current_user.tag, user_tag))
 
     friend_count = Relations.query.filter(or_(Relations.user_id == user_tag, Relations.friend_id == user_tag),
                                           Relations.status == 'accepted').count()
@@ -248,11 +302,16 @@ def user_profile(user_tag):
     return render_template('user_profile.html', title=f'Kona | {profile_owner["name"]} {profile_owner["surname"]}',
                            city_exists=city_exists, university_exists=university_exists,
                            pending_invite=pending_invite, accepted_invite=accepted_invite, sent_invite=sent_invite,
-                           profile_owner=profile_owner, friend_count=friend_count)
+                           profile_owner=profile_owner, friend_count=friend_count, current_user=current_user,
+                           identity=current_user_id)
 
 
 @main.route('/events', methods=['GET', 'POST'])
+@jwt_required(optional=True)
 def events():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
     limit = 2
     if request.method == 'POST':
         scroll = request.form.get('scroll')
@@ -261,25 +320,30 @@ def events():
             results = Event.query.order_by(desc(Event.start_time)).offset(offset).limit(
                 limit).all()
 
-            return render_template('only_events.html', results=results, title='Kona | Мероприятия')
+            return render_template('only_events.html', results=results)
     results = Event.query.order_by(desc(Event.start_time)).limit(limit).all()
     # if len(results) == 0:
     #     return redirect(url_for('.index'))
 
-    return render_template('events.html', results=results, title='Kona | Мероприятия')
+    return render_template('events.html', results=results, title='Kona | Мероприятия', identity=current_user_id,
+                           current_user=current_user)
 
 
 @main.route('/event/<event_id>', methods=['GET', 'POST'])
 def event(event_id):
-    
-	# selected_event = Event.query.filter_by(id=event_id).first()
+    # selected_event = Event.query.filter_by(id=event_id).first()
 
     return render_template('event_page.html', title=f'Ивент {event_id}', event_id=event_id)
 
 
 @main.route('/add_event', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def add_event():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
     if request.method == 'POST':
         color = request.form['color']
         name = request.form['name']
@@ -298,11 +362,11 @@ def add_event():
 
             try:
                 event = Event(
-                    photo='event_block.jpeg', 
-                    color=color, 
-                    name=name, 
-                    description=description, 
-                    format=format_, 
+                    photo='event_block.jpeg',
+                    color=color,
+                    name=name,
+                    description=description,
+                    format=format_,
                     start_time=datetime.datetime.combine(date, time),
                     directions=directions,
                     participants=participants,
@@ -324,12 +388,19 @@ def add_event():
         else:
             flash('Проверьте правильность введенных данных.', 'error')
 
-    return render_template('add_event.html', title=f'Создание Мероприятия')
+    return render_template('add_event.html', title=f'Создание Мероприятия', identity=current_user_id,
+                           current_user=current_user)
 
 
 @main.route('/friends', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def friends():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
+
     query = [row for row in engine.connect().execute(
         select(Relations).where(or_(Relations.user_id == current_user.tag, Relations.friend_id == current_user.tag),
                                 Relations.status == 'accepted'))]
@@ -345,12 +416,18 @@ def friends():
         friend_list[f - 1]['photo'] = friend_data[9]
         friend_list[f - 1]['university'] = friend_data[11]
 
-    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list)
+    return render_template('friends.html', title='Kona | Друзья', friend_list=friend_list, identity=current_user_id,
+                           current_user=current_user)
 
 
 @main.route('/messenger', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def messenger():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
     try:
         query = select(Messages).options(
             load_only(Messages.sender_id, Messages.receiver_id)).where(or_(Messages.sender_id == current_user.tag,
@@ -377,19 +454,30 @@ def messenger():
             dialogue_list[i - 1]['last_message'] = last_message
             dialogue_list[i - 1]['time'] = time
 
-    return render_template('messenger.html', title='Kona | Мессенджер', dialogue_list=dialogue_list)
+    return render_template('messenger.html', title='Kona | Мессенджер', dialogue_list=dialogue_list,
+                           identity=current_user_id, current_user=current_user)
 
 
 @main.route('/message/<user_tag>', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def message(user_tag):
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
     return render_template('message.html', title='Kona | Сообщение', user_tag=user_tag)
 
 
 @main.route('/calendar')
-@login_required
+@jwt_required()
 def calendar():
-    return render_template('calendar.html', title='Календарь')
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
+    return render_template('calendar.html', title='Календарь', identity=current_user_id, current_user=current_user)
 
 
 @main.route('/docs/<document_name>', methods=['GET', 'POST'])
@@ -398,11 +486,19 @@ def docs(document_name):
 
 
 @main.route('/logout')
-@login_required
+@jwt_required()
 def logout():
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    if not current_user:
+        return jsonify({"msg": "User not found"}), 404
     logout_user()
-    session.pop('email', None)
-    return redirect(url_for('.index'))
+    session.clear()
+    resp = make_response(redirect(url_for('.index')))
+    unset_jwt_cookies(resp)
+    print(session)
+    return resp
 
 
 @main.app_errorhandler(401)

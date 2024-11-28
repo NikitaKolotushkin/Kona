@@ -77,29 +77,59 @@
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script>
         $(document).ready(function(){
-            var profileTag = "{{ profile_owner['tag'] }}";
-            document.getElementById('interactive_form').addEventListener('click', function(event) {
-                event.preventDefault();
-                var buttonName = event.target.name;
-                var buttonValue = event.target.value;
-                $.ajax({
-                    url: '/user/' + profileTag,
-                    type: 'post',
-                    data: {
-                        button_name: buttonName,
-                        button_value: buttonValue
-                    },
-                    success: function(response){
-                        var message = response.message
-                        document.getElementById(buttonName).value = message
-                        console.log(message)
-                    },
-                    error: function(error){
-                        console.log(error)
-                    }
-                })
-            })
+    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var profileTag = "{{ profile_owner['tag'] }}";
+
+    function refreshToken() {
+        return $.ajax({
+            url: '/refresh',
+            type: 'POST',
+            xhrFields: {
+                withCredentials: true
+            }
         });
+    }
+
+    function handleRequest(buttonName, buttonValue) {
+        $.ajax({
+            url: '/user/' + profileTag,
+            type: 'POST',
+            data: {
+                button_name: buttonName,
+                button_value: buttonValue
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(response){
+                var message = response.message;
+                document.getElementById(buttonName).value = message;
+                console.log(message);
+            },
+            error: function(xhr, status, error){
+                if (xhr.status === 401) {
+                    refreshToken().done(function() {
+                        handleRequest(buttonName, buttonValue);
+                    }).fail(function() {
+                        window.location.href = '/login';
+                    });
+                } else {
+                    console.log(error);
+                }
+            }
+        });
+    }
+
+    document.getElementById('interactive_form').addEventListener('click', function(event) {
+        event.preventDefault();
+        var buttonName = event.target.name;
+        var buttonValue = event.target.value;
+        handleRequest(buttonName, buttonValue);
+    });
+});
     </script>
 
 {% endblock %}
